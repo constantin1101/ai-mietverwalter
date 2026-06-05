@@ -7,7 +7,7 @@
 
 ## 🔥 In Progress
 
-- [~] Supabase Projekt erstellen (EU Frankfurt) — braucht Input von dir
+- [x] Supabase Projekt erstellen (EU Frankfurt) — vnzvxaljtvlzrlmdekpc
 
 ---
 
@@ -31,26 +31,25 @@
 - [x] CORS-Konfiguration (Frontend-Origin erlauben)
 
 ### Supabase
-- [~] Supabase Projekt erstellen (EU Frankfurt) — ⚠️ braucht Input: Projekt-URL + Keys
-- [ ] DB-Schema migrieren: `supabase/migrations/` (alle Tabellen aus data-model.md) [Prio: H] [Effort: M]
-- [ ] Row Level Security (RLS) Policies für alle Tabellen [Prio: H] [Effort: M]
-- [ ] Supabase Storage Bucket für Dokumente (privat, RLS) [Prio: H] [Effort: S]
+- [x] Supabase Projekt erstellen (EU Frankfurt)
+- [x] DB-Schema migrieren (12 Tabellen inkl. RLS — via SQL Editor)
+- [x] Row Level Security (RLS) Policies für alle Tabellen
+- [x] Supabase Storage Bucket `documents` (privat)
 
 ### Auth
-- [ ] Supabase Auth einrichten (Email + Magic Link) [Prio: H] [Effort: S]
-- [x] Frontend: Login-Seite `(auth)/login/page.tsx`
-- [x] Frontend: Register-Seite `(auth)/register/page.tsx`
-- [x] Frontend: Auth-Callback Route `(auth)/callback/route.ts`
-- [x] Frontend: Auth-Middleware `middleware.ts` (Route Protection)
+- [x] Supabase Auth einrichten (Email + Magic Link aktiv, site URL konfiguriert)
+- [x] Frontend: Login-Seite `(auth)/auth/login/page.tsx`
+- [x] Frontend: Register-Seite `(auth)/auth/register/page.tsx`
+- [x] Frontend: Auth-Callback Route `(auth)/auth/callback/route.ts`
+- [x] Frontend: `proxy.ts` (Next.js 16, Route Protection — ersetzt middleware.ts)
 - [x] Backend: JWT-Validierung `core/auth.py` — Supabase Token prüfen
 - [x] Backend: `get_current_user` FastAPI Dependency
 - [x] Frontend: Dashboard Shell mit Sidebar
-- [ ] Frontend: Dashboard Shell mit Sidebar [Prio: H] [Effort: M]
 
 ### Upload
-- [ ] Frontend: Dokument-Upload UI (Drag & Drop, PDF/Bild) [Prio: H] [Effort: M]
-- [ ] Backend: `routers/upload.py` — POST `/upload` (Datei → Supabase Storage) [Prio: H] [Effort: S]
-- [ ] Backend: Datei-Validierung (Typ: PDF/JPG/PNG, max 20 MB) [Prio: M] [Effort: S]
+- [x] Frontend: Dokument-Upload UI (Drag & Drop, PDF/Bild) — `components/documents/upload-dropzone.tsx`
+- [x] Backend: `routers/upload.py` — POST `/upload` (Datei → Supabase Storage)
+- [x] Backend: Datei-Validierung (Typ: PDF/JPG/PNG, max 20 MB)
 
 ---
 
@@ -184,3 +183,4 @@
 
 - [x] 2026-06-05 — Projekt-Kontext erstellt (claude.md, README, docs/, tasks.md)
 - [x] 2026-06-05 — Architektur auf FastAPI (Python) Backend umgestellt
+- [x] 2026-06-05 — Sprint 1 abgeschlossen: Frontend (Next.js 16) + Backend (FastAPI) + Supabase (12 Tabellen, Auth, Storage) laufen lokal
