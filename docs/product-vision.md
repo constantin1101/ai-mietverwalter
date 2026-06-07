@@ -16,7 +16,7 @@ Wir befreien private Vermieter von der ätzenden Bürokratie, die ihnen das Eige
 
 ## Wettbewerbspositionierung
 
-| Bestehende Tools | AI-Mietverwalter |
+| Bestehende Tools | Heimio |
 |------------------|-----------------|
 | Digitalisierte Formulare | Autonome Agenten |
 | 30–60 Min. Setup pro Einheit | 3 Min. für gesamtes Portfolio |

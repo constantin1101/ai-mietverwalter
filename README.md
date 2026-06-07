@@ -1,4 +1,4 @@
-# 🏠 AI-Mietverwalter
+# 🏠 Heimio
 
 > **"Foto vom Mietvertrag. 5 Minuten. Fertiges Dashboard."**
 
@@ -11,7 +11,7 @@ Wir demokratisieren professionelle Immobilienverwaltung durch autonome AI-Agente
 
 Private Vermieter verbringen im Schnitt 250 Stunden/Jahr mit Verwaltungs-Aufwand — Fristen im Blick behalten, Indexmieten anpassen, Klauseln prüfen, Steuer vorbereiten.
 
-**AI-Mietverwalter** löst das: Einen Mietvertrag hochladen → AI extrahiert alle Daten → Dashboard mit allen KPIs, Fristen, Rechts-Check und Steuer-Vorbereitung ist sofort fertig.
+**Heimio** löst das: Einen Mietvertrag hochladen → AI extrahiert alle Daten → Dashboard mit allen KPIs, Fristen, Rechts-Check und Steuer-Vorbereitung ist sofort fertig.
 
 ---
 

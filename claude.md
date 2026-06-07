@@ -1,4 +1,4 @@
-# AI-Mietverwalter — Claude Code Instructions
+# Heimio — Claude Code Instructions
 
 ## Projekt-Überblick
 AI-natives Property-Management-SaaS für private Vermieter in Deutschland.
