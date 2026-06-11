@@ -1,5 +1,7 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from __future__ import annotations
+
 from pydantic import AnyHttpUrl
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Literal
 
 
@@ -12,18 +14,19 @@ class Settings(BaseSettings):
 
     environment: Literal["development", "production"] = "development"
 
-    # Supabase
+    # Supabase (EU Frankfurt)
     supabase_url: str
     supabase_service_role_key: str
     supabase_jwt_secret: str
 
-    # AI
-    anthropic_api_key: str
-    mistral_api_key: str
+    # LLM Proxy (OpenAI-compatible)
+    llm_proxy_url: str = "https://llm-proxy.edgez.live/"
+    llm_proxy_key: str
+    llm_model: str = "gpt-5"
 
     # Stripe
-    stripe_secret_key: str
-    stripe_webhook_secret: str
+    stripe_secret_key: str = ""
+    stripe_webhook_secret: str = ""
 
     # Resend
     resend_api_key: str = ""
@@ -38,6 +41,13 @@ class Settings(BaseSettings):
         "pro": 10,
         "portfolio": 999_999,
     }
+
+    @property
+    def openai_base_url(self) -> str:
+        """LLM proxy base URL, compatible with openai.AsyncOpenAI(base_url=...)."""
+        url = self.llm_proxy_url
+        # openai SDK expects the base URL without a trailing /v1 path — the SDK appends /chat/completions
+        return url.rstrip("/")
 
 
 settings = Settings()  # type: ignore[call-arg]

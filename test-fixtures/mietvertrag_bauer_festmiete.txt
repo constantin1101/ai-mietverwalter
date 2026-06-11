@@ -1,0 +1,112 @@
+WOHNRAUMMIETVERTRAG
+
+zwischen
+
+Vermieter:
+Maria Steinberg
+(nachfolgend „Vermieter" genannt)
+
+und
+
+Mieter:
+Klaus Bauer
+geboren am 12.03.1978
+E-Mail: k.bauer@gmail.com
+Telefon: 0176-44332211
+(nachfolgend „Mieter" genannt)
+
+wird folgender Mietvertrag geschlossen:
+
+
+§ 1 MIETGEGENSTAND
+
+(1) Der Vermieter vermietet an den Mieter die Wohnung im Anwesen
+
+    Musterstraße 12, 2. Obergeschoss links
+    80104 München
+
+(2) Die Wohnung besteht aus 3 Zimmern, einer Küche, einem Bad/WC sowie einem Flur. Die Gesamtwohnfläche beträgt ca. 72 m². Die Wohnflächenangabe dient der Beschreibung des Mietgegenstandes; eine Garantie einer bestimmten Mindestfläche wird nicht übernommen.
+
+(3) Zur Wohnung gehört ein Kellerabteil (Keller Nr. 4 im Untergeschoss). Ein Stellplatz oder eine Garage sind nicht Gegenstand dieses Mietvertrages.
+
+(4) Die Wohnung wird zum Zwecke der Eigennutzung als Wohnraum überlassen.
+
+(5) Der Mieter hat die Wohnung vor Unterzeichnung besichtigt und erkennt deren Zustand als vertragsgemäß an.
+
+
+§ 2 MIETDAUER
+
+(1) Das Mietverhältnis beginnt am 01. September 2023.
+
+(2) Das Mietverhältnis wird auf unbestimmte Zeit (unbefristet) geschlossen.
+
+
+§ 3 MIETZINS (KALTMIETE)
+
+(1) Die monatliche Kaltmiete beträgt: 850,00 Euro (achthundertfünfzig Euro).
+
+(2) Es handelt sich um eine Festmiete. Eine Indexierung oder Staffelung ist nicht vereinbart.
+
+(3) Die Miete ist monatlich im Voraus, spätestens am 1. Werktag eines jeden Monats, per Banküberweisung auf das Konto des Vermieters zu zahlen.
+
+(4) Die monatliche Gesamtmiete setzt sich zusammen aus:
+    Kaltmiete: 850,00 Euro + Betriebskosten VP: 180,00 Euro = Gesamt: 1.030,00 Euro
+
+
+§ 4 BETRIEBSKOSTEN
+
+(1) Neben der Kaltmiete hat der Mieter eine monatliche Betriebskostenvorauszahlung von 180,00 Euro (einhundertachtzig Euro) zu leisten.
+
+(2) Der Vermieter rechnet jährlich über die Betriebskosten ab (Abrechnungszeitraum: Kalenderjahr). Die Abrechnung ist dem Mieter spätestens zwölf Monate nach Ablauf des Abrechnungszeitraums zuzustellen.
+
+
+§ 5 KAUTION
+
+(1) Der Mieter leistet eine Kaution von 2.550,00 Euro (zweitausendfünfhundertfünfzig Euro), entspricht drei Monatskaltmieten (§ 551 BGB).
+
+(2) Die Kaution ist bei Mietbeginn fällig. Die Zahlung in drei gleichen monatlichen Raten ist zulässig.
+
+(3) Der Vermieter legt die Kaution getrennt von seinem Vermögen verzinslich an.
+
+
+§ 6 SCHÖNHEITSREPARATUREN
+
+(1) Der Mieter ist verpflichtet, Schönheitsreparaturen bei Bedarf durchzuführen.
+
+(2) Der Mieter verpflichtet sich, die Wohnung bei Auszug frisch gestrichen zu übergeben.
+
+
+§ 7 TIERHALTUNG
+
+(1) Die Haltung von Haustieren ist nicht gestattet.
+
+(2) Ausgenommen sind Kleintiere in geschlossenen Behältnissen (z. B. Zierfische, Käfigvögel), sofern keine Beeinträchtigungen entstehen.
+
+
+§ 8 KÜNDIGUNG
+
+(1) Das Mietverhältnis kann von beiden Parteien mit einer Frist von drei Monaten zum Monatsende gekündigt werden.
+
+(2) Die Kündigung bedarf der Schriftform (§ 568 BGB).
+
+(3) Das Recht zur außerordentlichen fristlosen Kündigung bleibt unberührt.
+
+
+§ 9 SONSTIGE VEREINBARUNGEN
+
+(1) Mündliche Nebenabreden bestehen nicht. Änderungen bedürfen der Schriftform.
+
+(2) Sollten einzelne Bestimmungen unwirksam sein, berührt dies die Wirksamkeit der übrigen Bestimmungen nicht.
+
+(3) Es gilt das Recht der Bundesrepublik Deutschland. Gerichtsstand ist München.
+
+---
+
+München, den ___________________
+
+__________________________________ ______________________________
+Maria Steinberg (Vermieter) Klaus Bauer (Mieter)
+
+---
+
+HINWEIS (TEST-FIXTURE): Die Klausel in § 6 Abs. 2 ("frisch gestrichen bei Auszug") ist eine nach BGH-Rechtsprechung unwirksame Endrenovierungsklausel (vgl. BGH VIII ZR 316/06) und ist in diesem Testdokument bewusst in problematischer Form enthalten.

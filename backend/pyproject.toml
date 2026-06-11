@@ -6,11 +6,15 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "anthropic>=0.105.2",
+    "cryptography>=48.0.0",
     "fastapi>=0.136.3",
     "mistralai>=1.0",
+    "openai>=2.41.0",
     "openpyxl>=3.1.5",
     "pydantic>=2.13.4",
     "pydantic-settings>=2.14.1",
+    "pyjwt[crypto]>=2.0",
+    "pymupdf>=1.27.2.3",
     "python-dateutil>=2.9.0.post0",
     "python-jose>=3.5.0",
     "python-multipart>=0.0.32",

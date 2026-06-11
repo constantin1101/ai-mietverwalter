@@ -21,7 +21,12 @@ interface UploadResponse {
   status: string;
 }
 
-export function UploadDropzone() {
+interface UploadDropzoneProps {
+  /** Called with the document_id after a successful upload instead of auto-redirecting. */
+  onSuccess?: (documentId: string) => void;
+}
+
+export function UploadDropzone({ onSuccess }: UploadDropzoneProps = {}) {
   const router = useRouter();
   const [state, setState] = useState<UploadState>({ type: "idle" });
 
@@ -38,8 +43,12 @@ export function UploadDropzone() {
         documentId: res.document_id,
         filename: res.filename,
       });
-      // Redirect to extraction flow
-      router.push(`/dashboard/units/new?document_id=${res.document_id}`);
+      if (onSuccess) {
+        onSuccess(res.document_id);
+      } else {
+        // Fallback: redirect to extraction flow
+        router.push(`/dashboard/units/new?document_id=${res.document_id}`);
+      }
     } catch (err) {
       const message =
         err instanceof ApiError
@@ -47,7 +56,7 @@ export function UploadDropzone() {
           : "Upload fehlgeschlagen. Bitte erneut versuchen.";
       setState({ type: "error", message });
     }
-  }, [router]);
+  }, [router, onSuccess]);
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {

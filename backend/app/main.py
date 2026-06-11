@@ -2,19 +2,23 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.routers import upload
+from app.routers import upload, extract
 
 app = FastAPI(
-    title="AI-Mietverwalter API",
-    version="0.1.0",
+    title="Heimio API",
+    description="Property management API for Heimio — smart German Mietverwaltung.",
+    version="0.2.0",
     docs_url="/docs" if settings.environment == "development" else None,
     redoc_url=None,
 )
 
-# CORS — allow Next.js frontend
+# CORS — allow Next.js frontend.
+# AnyHttpUrl normalises to a trailing slash; strip it so browsers match the
+# bare origin (e.g. "http://localhost:3000", not "http://localhost:3000/").
+_origin = str(settings.frontend_url).rstrip("/")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[str(settings.frontend_url)],
+    allow_origins=[_origin],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -22,6 +26,7 @@ app.add_middleware(
 
 # Routers
 app.include_router(upload.router)
+app.include_router(extract.router)
 
 
 @app.get("/health")
