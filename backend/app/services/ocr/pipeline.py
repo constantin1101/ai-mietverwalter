@@ -63,7 +63,7 @@ async def _ocr_image_bytes(image_bytes: bytes, mime_type: str, settings: "Settin
         t0 = time.monotonic()
         try:
             response = await client.chat.completions.create(
-                model=settings.llm_model,
+                model=settings.llm_model_ocr,
                 max_tokens=4096,
                 messages=[
                     {"role": "system", "content": (

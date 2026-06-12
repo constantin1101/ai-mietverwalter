@@ -22,7 +22,10 @@ class Settings(BaseSettings):
     # LLM Proxy (OpenAI-compatible)
     llm_proxy_url: str = "https://llm-proxy.edgez.live/"
     llm_proxy_key: str
-    llm_model: str = "gpt-5"
+
+    # Model config — use fast model for extraction, can override per-call
+    llm_model: str = "gemini-2.5-flash"          # main extraction model
+    llm_model_ocr: str = "gemini-2.5-flash"       # vision OCR model
 
     # Stripe
     stripe_secret_key: str = ""
@@ -44,10 +47,7 @@ class Settings(BaseSettings):
 
     @property
     def openai_base_url(self) -> str:
-        """LLM proxy base URL, compatible with openai.AsyncOpenAI(base_url=...)."""
-        url = self.llm_proxy_url
-        # openai SDK expects the base URL without a trailing /v1 path — the SDK appends /chat/completions
-        return url.rstrip("/")
+        return self.llm_proxy_url.rstrip("/")
 
 
 settings = Settings()  # type: ignore[call-arg]
