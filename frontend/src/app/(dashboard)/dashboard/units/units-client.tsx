@@ -3,10 +3,9 @@
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { ButtonLink } from "@/components/ui/button-link";
+import { ExportDialog } from "@/components/export-dialog";
 import { Download, Plus, Search, X } from "lucide-react";
 import type { UnitCard } from "@/types/api";
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL!;
 
 const RENT_TYPE_LABEL: Record<string, string> = {
   fixed: "Festmiete",
@@ -25,6 +24,7 @@ export function UnitsClient({ units, token }: { units: UnitCard[]; token: string
   const [search, setSearch] = useState("");
   const [cityFilter, setCityFilter] = useState("");
   const [rentTypeFilter, setRentTypeFilter] = useState("");
+  const [exportOpen, setExportOpen] = useState(false);
 
   // Unique cities for filter dropdown
   const cities = useMemo(
@@ -55,21 +55,15 @@ export function UnitsClient({ units, token }: { units: UnitCard[]; token: string
     setRentTypeFilter("");
   }
 
-  async function downloadExcel() {
-    const res = await fetch(`${BACKEND_URL}/export/excel`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "heimio-export.xlsx";
-    a.click();
-    URL.revokeObjectURL(url);
-  }
-
   return (
     <div className="max-w-6xl mx-auto px-6 py-8 space-y-6">
+      <ExportDialog
+        open={exportOpen}
+        onClose={() => setExportOpen(false)}
+        token={token}
+        cities={cities}
+      />
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -80,7 +74,7 @@ export function UnitsClient({ units, token }: { units: UnitCard[]; token: string
         </div>
         <div className="flex items-center gap-2">
           <button
-            onClick={downloadExcel}
+            onClick={() => setExportOpen(true)}
             className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-muted-foreground border border-border rounded-xl hover:bg-accent hover:text-foreground transition-colors"
           >
             <Download className="h-4 w-4" />

@@ -7,7 +7,7 @@
 
 ## 🔥 In Progress
 
-*(Sprint 4 — Monetarisierung)*
+*(Sprint 4 — Mietspiegel)*
 
 ---
 
@@ -85,7 +85,69 @@
 
 ---
 
-## 📌 Sprint 4 — Monetarisierung
+## 📌 Sprint 4 — Mietspiegel & Excel-Export
+*Ziel: Marktvergleich für alle Einheiten + professioneller Steuerberater-tauglicher Export*
+
+### Mietspiegel — Datenbasis
+
+- [ ] **Daten kuratieren**: `backend/app/data/mietspiegel.json` — Richtwerte für 12 Städte (München, Berlin, Hamburg, Frankfurt, Stuttgart, Düsseldorf, Köln, Nürnberg, Leipzig, Dresden, Hannover, Bremen). Struktur pro Stadt: 5 Flächenbänder (<40 m², 40–60 m², 60–80 m², 80–100 m², >100 m²) × jeweils `{min, avg, max}` in €/m², `data_year`, `source` [Prio: H] [Effort: M]
+  > *ADR: Statische JSON-Datei statt DB-Tabelle — einfacher zu versionieren und zu aktualisieren. Jährliche Pflege per Hand reicht für MVP.*
+
+- [ ] **DB-Migration 0008**: Optionale Tabelle `mietspiegel_overrides` für manuelle Stadtanpassungen (id, city, area_sqm_min, area_sqm_max, rent_min, rent_avg, rent_max, data_year, source) — erlaubt Admin-Korrekturen ohne Code-Deploy [Prio: L] [Effort: S]
+
+### Mietspiegel — Backend
+
+- [ ] `utils/rent_calculator.py` — Funktion `get_market_comparison(city, area_sqm) -> MietspiegelResult | None`: lädt JSON, wählt passendes Flächenband, gibt zurück: `{city_supported, rent_min, rent_avg, rent_max, data_year, source}` [Prio: H] [Effort: S]
+
+- [ ] `routers/mietspiegel.py` — `GET /units/{unit_id}/mietspiegel`: liest Einheit + aktivem Lease, ruft `rent_calculator` auf, berechnet Position im Markt. Response-Model `MietspiegelComparison`: `{unit_id, area_sqm, current_rent, current_per_sqm, market_min, market_avg, market_max, delta_to_avg, delta_to_avg_pct, bucket: "below"|"at"|"above", city_supported, data_year, source}` [Prio: H] [Effort: M]
+
+- [ ] `GET /portfolio/mietspiegel` — Batch-Vergleich aller Einheiten des Users: gibt Liste von `MietspiegelComparison` zurück (nur für Einheiten mit bekannter Stadt + Fläche). Aggregat: `{total_units_compared, units_below_market, total_potential_increase_monthly}` [Prio: H] [Effort: M]
+
+- [ ] `routers/units.py` — `GET /units/kpis` um `units_below_market_count` und `monthly_potential` ergänzen [Prio: M] [Effort: XS]
+
+### Mietspiegel — Frontend
+
+- [ ] **Typen**: `MietspiegelComparison` und `PortfolioMietspiegel` in `frontend/src/types/api.ts` [Prio: H] [Effort: XS]
+
+- [ ] **Einheiten-Detail, Tab Finanzen**: Mietspiegel-Card unterhalb der Miete einfügen. Zeigt: aktueller €/m², horizontaler Positionsbalken (min–avg–max), farbiges Badge ("Unter Marktniveau" rot / "Im Marktniveau" grün / "Über Marktniveau" blau), Delta zum Durchschnitt in € und %. Wenn Stadt nicht abgedeckt: Hinweis "Keine Mietspiegel-Daten für [Stadt]" [Prio: H] [Effort: M]
+
+- [ ] **Dashboard KPI-Card**: "Marktpotenzial" — zeigt `X Einheiten unter Marktniveau · +Y €/Monat möglich`. Klick führt zur Portfolio-Mietspiegel-Seite [Prio: H] [Effort: S]
+
+- [ ] **Neue Seite `/dashboard/portfolio/mietspiegel`**: Tabelle aller Einheiten mit Mietspiegel-Vergleich. Spalten: Adresse, Mieter, Aktuell (€/m²), Markt-Ø (€/m²), Abweichung (€ + %), Status-Badge. Sortierbar. Filter: nur "unter Marktniveau" anzeigen. Summenzeile: Gesamtpotenzial [Prio: M] [Effort: M]
+
+- [ ] **Sidebar-Link** "Marktvergleich" oder als Unterseite von Einheiten anzeigen [Prio: L] [Effort: XS]
+
+---
+
+### Excel-Export — Redesign
+
+- [x] **ADR**: Bestehende `routers/export.py` ersetzen statt neue Datei. openpyxl bleibt, Struktur komplett neu. Ziel: Steuerberater-tauglicher, vollständiger Überblick [Prio: H] [Effort: XS]
+
+- [x] **Sheet 1 — Deckblatt**: Heimio-Logo (PNG eingebettet), Export-Datum, Zeitraum-Filter (falls angewendet), KPI-Zusammenfassung (Einheiten, Gesamtmiete, Fristen, Leerstand), Kontakt-Hinweis "Erstellt mit Heimio" [Prio: M] [Effort: S]
+
+- [x] **Sheet 2 — Portfolio-Übersicht**: Eine Zeile pro Einheit. Spalten: Adresse, Einheit-Nr., Stadt, PLZ, Mieter (Hauptmieter), Kaltmiete, Betriebskosten VP, Warmmiete, Kaution, €/m², Zimmer, Fläche (m²), Mietart, Mietbeginn, Laufzeit/Ende, Kündigungsfrist, Mietspiegel-Bucket (falls verfügbar). Summenzeile: Gesamtkaltmiete, Gesamtwarmmiete [Prio: H] [Effort: M]
+
+- [x] **Sheet 3 — Mietverträge**: Ein Datensatz pro Lease. Alle Vertragsfelder: Mietbeginn, Vertragsende, Befristet (Ja/Nein), Kündigungsfrist, Zahlungstag, Zahlungsweise, Haustiere, Untermiete, Schönheitsreparaturen-Klausel, Indexmiete-Parameter (Typ, Basiswert, Basisdatum, Intervall), Extraktions-Konfidenz [Prio: H] [Effort: M]
+
+- [x] **Sheet 4 — Mieter**: Pro Mieter: Vorname, Nachname, E-Mail, Telefon, Einheit (Adresse), Rolle (Haupt-/Mitmieter), Mietbeginn, Kaution [Prio: H] [Effort: S]
+
+- [x] **Sheet 5 — Finanzen**: Pro Einheit + Monat (rollierendes 12-Monats-Fenster): Kaltmiete IST, Betriebskosten VP, Warmmiete, sowie Jahressummen. Zusatz-Zeilen: Staffelmiete-Stufen (zukünftige Erhöhungen), Indexmiete-Basis. Pivot-ähnliche Ansicht nach Jahr/Monat [Prio: H] [Effort: L]
+
+- [x] **Sheet 6 — Fristen & Termine**: Alle offenen Fristen. Spalten: Titel, Fälligkeitsdatum, Typ (deutsch), Einheit, Mieter, Tage bis Fälligkeit, Status. Conditional Formatting: überfällig = rot, ≤14 Tage = orange, ≤30 Tage = gelb [Prio: H] [Effort: M]
+
+- [x] **Sheet 7 — Mietentwicklung**: Alle `rent_adjustments` + zukünftige Staffel-Stufen. Spalten: Einheit, Mieter, Typ (Staffel/Index/Manual), Gültig ab, Alte Miete, Neue Miete, Veränderung (+€ / +%), Anschreiben verschickt. Separate Zeilen für Ist-Verlauf und Prognose. Conditional Formatting: Zukunft = hellblau hinterlegt [Prio: H] [Effort: M]
+
+- [x] **Sheet 8 — Dokumente**: Alle Dokumente mit: Dateiname, Typ (deutsch), Einheit, Mieter, Hochgeladen am, Dateigröße, Status. Hyperlink auf Supabase-Signed-URL (60-Tage-Gültigkeit für Export) [Prio: M] [Effort: M]
+
+- [x] **Formatierung** (alle Sheets): Frozen Panes (erste 2 Zeilen), Spaltenbreiten auto-fit (max 45 Zeichen), Header-Zeile dunkel (#1C2B3A) mit weißer Fett-Schrift, alternierende Zeilenfarben (#FFFFFF / #F9F9F7), Währungsformat `#.##0,00 €`, Datumsformat `TT.MM.JJJJ`, Tab-Farben pro Sheet, Sheet-Reihenfolge wie oben [Prio: H] [Effort: M]
+
+- [x] **Export-Dialog Frontend**: Ersetzt einfachen Button. Optionen: Alle Daten / Zeitraum wählen (Von–Bis für Finanzen & Fristen), Einheiten-Filter (alle / einzelne Stadt auswählen). Zeigt Ladeindikator. Dateiname: `heimio-export-YYYY-MM-DD.xlsx` [Prio: M] [Effort: M]
+
+- [x] **Export-Endpunkt erweitern**: `GET /export/excel` akzeptiert Query-Parameter: `date_from`, `date_to` (ISO), `city` (optional). Filtert Fristen und Finanzen-Sheet entsprechend [Prio: M] [Effort: S]
+
+---
+
+## 📌 Sprint 5 — Monetarisierung
 *Ziel: Stripe läuft, Tiers werden enforced*
 
 ### Backend
@@ -99,7 +161,7 @@
 
 ---
 
-## 📌 Sprint 5 — Compliance & Polish
+## 📌 Sprint 6 — Compliance & Polish
 *Ziel: DSGVO-konform, launch-ready*
 
 ### DSGVO
@@ -116,7 +178,7 @@
 
 ---
 
-## 📌 Sprint 6 — Launch
+## 📌 Sprint 7 — Launch
 - [ ] Domain konfigurieren [Prio: H] [Effort: XS]
 - [ ] Vercel + Railway/Fly.io Production Deployment [Prio: H] [Effort: M]
 - [ ] Resend Transaktions-Mails [Prio: H] [Effort: M]
@@ -135,11 +197,6 @@
 
 ### Steuer-Export *(verschoben)*
 - [ ] GET `/export/tax` — Steuer-Export Anlage V (openpyxl)
-
-### Mietspiegel *(bewusst verschoben)*
-- [ ] Mietspiegel-Daten Top-10-Städte in DB laden
-- [ ] Vergleichs-Logik in `utils/rent_calculator.py`
-- [ ] Frontend: Mietspiegel-Vergleich in Einheiten-Detail
 
 ### Weitere Phase-2-Features
 - [ ] PSD2/FinAPI Bank-Anbindung
