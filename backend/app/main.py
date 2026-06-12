@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.routers import upload, extract, units, export, documents, deadlines
+from app.routers import upload, extract, units, export, documents, deadlines, mietspiegel
 
 app = FastAPI(
     title="Heimio API",
@@ -31,6 +31,7 @@ app.include_router(units.router)
 app.include_router(export.router)
 app.include_router(documents.router)
 app.include_router(deadlines.router)
+app.include_router(mietspiegel.router)
 
 
 @app.get("/health")

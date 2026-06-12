@@ -7,6 +7,7 @@ import {
   Building2,
   FileText,
   CalendarDays,
+  BarChart2,
   Settings,
   LogOut,
 } from "lucide-react";
@@ -15,11 +16,12 @@ import { createClient } from "@/lib/supabase/client";
 import { Logo } from "@/components/brand/logo";
 
 const navItems = [
-  { href: "/dashboard",           label: "Übersicht",     icon: LayoutDashboard },
-  { href: "/dashboard/units",     label: "Einheiten",     icon: Building2 },
-  { href: "/dashboard/documents", label: "Dokumente",     icon: FileText },
-  { href: "/dashboard/calendar",  label: "Fristen",       icon: CalendarDays },
-  { href: "/dashboard/settings",  label: "Einstellungen", icon: Settings },
+  { href: "/dashboard",              label: "Übersicht",     icon: LayoutDashboard },
+  { href: "/dashboard/units",        label: "Einheiten",     icon: Building2 },
+  { href: "/dashboard/documents",    label: "Dokumente",     icon: FileText },
+  { href: "/dashboard/calendar",     label: "Fristen",       icon: CalendarDays },
+  { href: "/dashboard/mietspiegel",  label: "Marktmieten",   icon: BarChart2 },
+  { href: "/dashboard/settings",     label: "Einstellungen", icon: Settings },
 ];
 
 export function Sidebar() {

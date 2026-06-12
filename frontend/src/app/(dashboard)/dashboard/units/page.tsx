@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { api } from "@/lib/api/server";
-import type { UnitCard } from "@/types/api";
+import type { UnitCard, PortfolioMarketOverview, UnitMarketData } from "@/types/api";
 import { UnitsClient } from "./units-client";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Plus } from "lucide-react";
@@ -47,5 +47,14 @@ export default async function UnitsPage() {
     );
   }
 
-  return <UnitsClient units={units} token={token} />;
+  // Fetch market comparison data in parallel — graceful fallback on error
+  const marketOverview = await api
+    .get<PortfolioMarketOverview>("/portfolio/market-overview", user)
+    .catch(() => ({ units: [], summary: { total_units_compared: 0, units_below_market: 0, units_at_market: 0, units_above_market: 0, total_monthly_potential: 0 } } as PortfolioMarketOverview));
+
+  const marketByUnit: Record<string, UnitMarketData> = Object.fromEntries(
+    marketOverview.units.map((u) => [u.unit_id, u])
+  );
+
+  return <UnitsClient units={units} token={token} marketByUnit={marketByUnit} />;
 }

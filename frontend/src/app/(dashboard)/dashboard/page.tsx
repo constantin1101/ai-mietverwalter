@@ -3,7 +3,10 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { Plus, Building2, TrendingUp, Euro, CalendarDays } from "lucide-react";
 import Link from "next/link";
 import { api } from "@/lib/api/server";
-import type { PortfolioKPIs, UnitCard, TrackersResponse } from "@/types/api";
+import type { PortfolioKPIs, UnitCard, TrackersResponse, PortfolioMarketOverview } from "@/types/api";
+import { MietspiegelWidget } from "@/components/mietspiegel-widget";
+
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL!;
 
 // ── KPI Card ──────────────────────────────────────────────────────────────────
 function KpiCard({ label, value, sub, icon: Icon, highlight = false }: {
@@ -107,11 +110,16 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
-  // Fetch KPIs, units, and trackers in parallel
-  const [kpis, units, trackers] = await Promise.all([
+  // Fetch KPIs, units, trackers, Mietspiegel cities, and market overview in parallel
+  const [kpis, units, trackers, mietspiegelCities, marketOverview] = await Promise.all([
     api.get<PortfolioKPIs>("/units/kpis", user),
     api.get<UnitCard[]>("/units", user),
     api.get<TrackersResponse>("/units/trackers", user).catch(() => ({ staffel_alerts: [], index_alerts: [] } as TrackersResponse)),
+    fetch(`${BACKEND_URL}/mietspiegel/cities`, { cache: "no-store" })
+      .then((r) => r.json() as Promise<string[]>)
+      .catch(() => [] as string[]),
+    api.get<PortfolioMarketOverview>("/portfolio/market-overview", user)
+      .catch(() => null),
   ]);
 
   const hasUnits = units.length > 0;
@@ -133,16 +141,45 @@ export default async function DashboardPage() {
         </div>
 
         {/* KPIs */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           <KpiCard label="Einheiten" value={String(kpis.total_units)}
             sub={hasUnits ? "vermietet" : "noch keine"} icon={Building2} />
           <KpiCard label="Kaltmiete" value={`${kpis.total_monthly_rent.toLocaleString("de-DE")} €`}
             sub="pro Monat" icon={Euro} highlight={hasUnits} />
           <KpiCard label="Ø €/m²"
             value={kpis.avg_rent_per_sqm ? `${kpis.avg_rent_per_sqm.toFixed(2)} €` : "—"}
-            sub="nach Upload" icon={TrendingUp} />
+            sub="Portfolio-Schnitt" icon={TrendingUp} />
           <KpiCard label="Fristen (30d)" value={String(kpis.upcoming_deadlines)}
             sub="offene Termine" icon={CalendarDays} />
+          {marketOverview && marketOverview.summary.total_units_compared > 0 && (
+            <Link href="/dashboard/units?market=below" className="block">
+              <div className={`rounded-2xl p-5 border shadow-sm hover:shadow-md transition-shadow duration-150 ${
+                marketOverview.summary.units_below_market > 0
+                  ? "bg-amber-50 border-amber-200"
+                  : "bg-white border-border"
+              }`}>
+                <div className="flex items-start justify-between">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Marktpotenzial</p>
+                  <TrendingUp className="h-4 w-4 text-stone-300 shrink-0" />
+                </div>
+                {marketOverview.summary.units_below_market > 0 ? (
+                  <>
+                    <p className="mt-3 text-3xl font-bold tabular-nums text-amber-700">
+                      +{marketOverview.summary.total_monthly_potential.toLocaleString("de-DE", { maximumFractionDigits: 0 })} €
+                    </p>
+                    <p className="mt-1 text-[13px] text-amber-600">
+                      {marketOverview.summary.units_below_market} Einheit{marketOverview.summary.units_below_market !== 1 ? "en" : ""} unter Markt
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="mt-3 text-3xl font-bold tabular-nums text-green-700">✓</p>
+                    <p className="mt-1 text-[13px] text-green-600">Alle Mieten marktgerecht</p>
+                  </>
+                )}
+              </div>
+            </Link>
+          )}
         </div>
 
         {/* Tracker alerts section */}
@@ -191,6 +228,15 @@ export default async function DashboardPage() {
                   </div>
                 </Link>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Mietspiegel widget */}
+        {mietspiegelCities.length > 0 && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="lg:col-span-1">
+              <MietspiegelWidget cities={mietspiegelCities} />
             </div>
           </div>
         )}

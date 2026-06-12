@@ -90,32 +90,29 @@
 
 ### Mietspiegel — Datenbasis
 
-- [ ] **Daten kuratieren**: `backend/app/data/mietspiegel.json` — Richtwerte für 12 Städte (München, Berlin, Hamburg, Frankfurt, Stuttgart, Düsseldorf, Köln, Nürnberg, Leipzig, Dresden, Hannover, Bremen). Struktur pro Stadt: 5 Flächenbänder (<40 m², 40–60 m², 60–80 m², 80–100 m², >100 m²) × jeweils `{min, avg, max}` in €/m², `data_year`, `source` [Prio: H] [Effort: M]
-  > *ADR: Statische JSON-Datei statt DB-Tabelle — einfacher zu versionieren und zu aktualisieren. Jährliche Pflege per Hand reicht für MVP.*
+- [x] **Daten kuratieren**: `backend/app/data/mietspiegel.json` — Angebotsmieten für 12 Städte (München, Berlin, Hamburg, Frankfurt, Stuttgart, Düsseldorf, Köln, Nürnberg, Leipzig, Dresden, Hannover, Bremen). 5 Flächenbänder × {min, avg, max} €/m², data_year 2024, source ImmobilienScout24/Empirica [Prio: H] [Effort: M]
 
-- [ ] **DB-Migration 0008**: Optionale Tabelle `mietspiegel_overrides` für manuelle Stadtanpassungen (id, city, area_sqm_min, area_sqm_max, rent_min, rent_avg, rent_max, data_year, source) — erlaubt Admin-Korrekturen ohne Code-Deploy [Prio: L] [Effort: S]
+- [ ] **DB-Migration 0008**: Optionale Tabelle `mietspiegel_overrides` — erlaubt Admin-Korrekturen ohne Code-Deploy [Prio: L] [Effort: S]
 
 ### Mietspiegel — Backend
 
-- [ ] `utils/rent_calculator.py` — Funktion `get_market_comparison(city, area_sqm) -> MietspiegelResult | None`: lädt JSON, wählt passendes Flächenband, gibt zurück: `{city_supported, rent_min, rent_avg, rent_max, data_year, source}` [Prio: H] [Effort: S]
+- [x] `utils/rent_calculator.py` — `get_market_comparison(city, area_sqm)`, `get_city_data(city)`, `get_supported_cities()` [Prio: H] [Effort: S]
 
-- [ ] `routers/mietspiegel.py` — `GET /units/{unit_id}/mietspiegel`: liest Einheit + aktivem Lease, ruft `rent_calculator` auf, berechnet Position im Markt. Response-Model `MietspiegelComparison`: `{unit_id, area_sqm, current_rent, current_per_sqm, market_min, market_avg, market_max, delta_to_avg, delta_to_avg_pct, bucket: "below"|"at"|"above", city_supported, data_year, source}` [Prio: H] [Effort: M]
+- [x] `routers/mietspiegel.py` — `GET /mietspiegel/cities`, `GET /mietspiegel/{city}`, `GET /mietspiegel/{city}/lookup` (keine Auth nötig) [Prio: H] [Effort: M]
 
-- [ ] `GET /portfolio/mietspiegel` — Batch-Vergleich aller Einheiten des Users: gibt Liste von `MietspiegelComparison` zurück (nur für Einheiten mit bekannter Stadt + Fläche). Aggregat: `{total_units_compared, units_below_market, total_potential_increase_monthly}` [Prio: H] [Effort: M]
+- [ ] `GET /portfolio/mietspiegel` — Batch-Vergleich aller Einheiten des Users gegen Marktdaten. Aggregat: `{units_below_market, total_potential_increase_monthly}` [Prio: M] [Effort: M]
 
 - [ ] `routers/units.py` — `GET /units/kpis` um `units_below_market_count` und `monthly_potential` ergänzen [Prio: M] [Effort: XS]
 
 ### Mietspiegel — Frontend
 
-- [ ] **Typen**: `MietspiegelComparison` und `PortfolioMietspiegel` in `frontend/src/types/api.ts` [Prio: H] [Effort: XS]
+- [x] **Typen**: `MietspiegelBand`, `CityMietspiegel`, `MarketComparison` in `frontend/src/types/api.ts` [Prio: H] [Effort: XS]
 
-- [ ] **Einheiten-Detail, Tab Finanzen**: Mietspiegel-Card unterhalb der Miete einfügen. Zeigt: aktueller €/m², horizontaler Positionsbalken (min–avg–max), farbiges Badge ("Unter Marktniveau" rot / "Im Marktniveau" grün / "Über Marktniveau" blau), Delta zum Durchschnitt in € und %. Wenn Stadt nicht abgedeckt: Hinweis "Keine Mietspiegel-Daten für [Stadt]" [Prio: H] [Effort: M]
+- [x] **Neue Seite `/dashboard/mietspiegel`**: Stadt-Selektor + Tabelle mit min/avg/max pro Flächenband, visueller Positionsbalken, KPI-Cards oben, Disclaimer-Box. Sidebar-Link "Marktmieten" [Prio: H] [Effort: M]
 
-- [ ] **Dashboard KPI-Card**: "Marktpotenzial" — zeigt `X Einheiten unter Marktniveau · +Y €/Monat möglich`. Klick führt zur Portfolio-Mietspiegel-Seite [Prio: H] [Effort: S]
+- [x] **Dashboard-Widget** `components/mietspiegel-widget.tsx`: Kompakte Karte mit Stadt-Dropdown, Ø-Wert für 40–60 m², Mini-Balken für alle Bänder, Link zur vollen Seite [Prio: H] [Effort: S]
 
-- [ ] **Neue Seite `/dashboard/portfolio/mietspiegel`**: Tabelle aller Einheiten mit Mietspiegel-Vergleich. Spalten: Adresse, Mieter, Aktuell (€/m²), Markt-Ø (€/m²), Abweichung (€ + %), Status-Badge. Sortierbar. Filter: nur "unter Marktniveau" anzeigen. Summenzeile: Gesamtpotenzial [Prio: M] [Effort: M]
-
-- [ ] **Sidebar-Link** "Marktvergleich" oder als Unterseite von Einheiten anzeigen [Prio: L] [Effort: XS]
+- [ ] **Einheiten-Detail, Tab Finanzen**: Mietspiegel-Card unterhalb der Miete — aktueller €/m² vs. Markt-Ø, Positionsbalken, Badge ("Unter/Im/Über Marktniveau") [Prio: M] [Effort: M]
 
 ---
 
@@ -221,3 +218,5 @@
 - [x] 2026-06-12 — AI-Pipeline optimiert: gemini-2.5-flash, 3× schneller, 21/21 Felder
 - [x] 2026-06-12 — Rechts-Check + Mietspiegel auf Phase 2 verschoben
 - [x] 2026-06-12 — Sprint 3 abgeschlossen: Dashboard, Einheiten-Listen, Kalender, Dokumente, Tracker
+- [x] 2026-06-12 — Excel-Export Redesign: 8-Sheet Workbook (Deckblatt, Portfolio, Mietverträge, Mieter, Finanzen, Fristen, Mietentwicklung, Dokumente) + ExportDialog mit Filtern
+- [x] 2026-06-12 — Mietspiegel Feature: Daten 12 Städte, Backend-API, Seite /dashboard/mietspiegel + Dashboard-Widget

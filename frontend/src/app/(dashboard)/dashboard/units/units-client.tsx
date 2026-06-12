@@ -4,8 +4,8 @@ import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { ButtonLink } from "@/components/ui/button-link";
 import { ExportDialog } from "@/components/export-dialog";
-import { Download, Plus, Search, X } from "lucide-react";
-import type { UnitCard } from "@/types/api";
+import { Download, Plus, Search, X, TrendingDown, TrendingUp, Minus } from "lucide-react";
+import type { UnitCard, UnitMarketData } from "@/types/api";
 
 const RENT_TYPE_LABEL: Record<string, string> = {
   fixed: "Festmiete",
@@ -19,12 +19,27 @@ const RENT_TYPE_COLOR: Record<string, string> = {
   graduated: "bg-amber-50 text-amber-700",
 };
 
-export function UnitsClient({ units, token }: { units: UnitCard[]; token: string }) {
+const BUCKET_CONFIG = {
+  below: { label: "Unter Markt", icon: TrendingDown, className: "bg-red-50 text-red-700" },
+  at:    { label: "Marktgerecht", icon: Minus,        className: "bg-green-50 text-green-700" },
+  above: { label: "Über Markt",  icon: TrendingUp,   className: "bg-blue-50 text-blue-700" },
+} as const;
+
+export function UnitsClient({
+  units, token, marketByUnit = {},
+}: {
+  units: UnitCard[];
+  token: string;
+  marketByUnit?: Record<string, UnitMarketData>;
+}) {
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [cityFilter, setCityFilter] = useState("");
   const [rentTypeFilter, setRentTypeFilter] = useState("");
+  const [marketFilter, setMarketFilter] = useState("");
   const [exportOpen, setExportOpen] = useState(false);
+
+  const hasMarketData = Object.keys(marketByUnit).length > 0;
 
   // Unique cities for filter dropdown
   const cities = useMemo(
@@ -36,6 +51,10 @@ export function UnitsClient({ units, token }: { units: UnitCard[]; token: string
     return units.filter((u) => {
       if (cityFilter && u.city !== cityFilter) return false;
       if (rentTypeFilter && u.rent_type !== rentTypeFilter) return false;
+      if (marketFilter) {
+        const m = marketByUnit[u.id];
+        if (!m || m.bucket !== marketFilter) return false;
+      }
       if (search) {
         const q = search.toLowerCase();
         const address = `${u.street} ${u.house_number} ${u.city}`.toLowerCase();
@@ -44,15 +63,16 @@ export function UnitsClient({ units, token }: { units: UnitCard[]; token: string
       }
       return true;
     });
-  }, [units, cityFilter, rentTypeFilter, search]);
+  }, [units, cityFilter, rentTypeFilter, marketFilter, marketByUnit, search]);
 
   const totalRent = filtered.reduce((s, u) => s + u.base_rent, 0);
-  const hasFilters = !!search || !!cityFilter || !!rentTypeFilter;
+  const hasFilters = !!search || !!cityFilter || !!rentTypeFilter || !!marketFilter;
 
   function clearFilters() {
     setSearch("");
     setCityFilter("");
     setRentTypeFilter("");
+    setMarketFilter("");
   }
 
   return (
@@ -125,6 +145,20 @@ export function UnitsClient({ units, token }: { units: UnitCard[]; token: string
           <option value="graduated">Staffelmiete</option>
         </select>
 
+        {/* Market position filter */}
+        {hasMarketData && (
+          <select
+            value={marketFilter}
+            onChange={(e) => setMarketFilter(e.target.value)}
+            className="py-2 pl-3 pr-8 text-sm bg-white border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-foreground"
+          >
+            <option value="">Alle Marktlagen</option>
+            <option value="below">Unter Markt</option>
+            <option value="at">Marktgerecht</option>
+            <option value="above">Über Markt</option>
+          </select>
+        )}
+
         {/* Clear */}
         {hasFilters && (
           <button
@@ -165,6 +199,9 @@ export function UnitsClient({ units, token }: { units: UnitCard[]; token: string
                 <th className="text-left py-3 px-4 font-medium text-muted-foreground text-[12px] uppercase tracking-wide">Mietart</th>
                 <th className="text-left py-3 px-4 font-medium text-muted-foreground text-[12px] uppercase tracking-wide hidden md:table-cell">Zi. / m²</th>
                 <th className="text-left py-3 px-4 font-medium text-muted-foreground text-[12px] uppercase tracking-wide hidden lg:table-cell">Stadt</th>
+                {hasMarketData && (
+                  <th className="text-left py-3 px-4 font-medium text-muted-foreground text-[12px] uppercase tracking-wide hidden xl:table-cell">Marktlage</th>
+                )}
                 <th className="w-8" />
               </tr>
             </thead>
@@ -205,6 +242,25 @@ export function UnitsClient({ units, token }: { units: UnitCard[]; token: string
                     <td className="py-3.5 px-4 text-muted-foreground hidden lg:table-cell">
                       {unit.postal_code} {unit.city}
                     </td>
+                    {hasMarketData && (() => {
+                      const m = marketByUnit[unit.id];
+                      if (!m) return <td className="py-3.5 px-4 hidden xl:table-cell"><span className="text-[12px] text-muted-foreground">—</span></td>;
+                      const cfg = BUCKET_CONFIG[m.bucket];
+                      const Icon = cfg.icon;
+                      return (
+                        <td className="py-3.5 px-4 hidden xl:table-cell">
+                          <div className="flex flex-col gap-0.5">
+                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium w-fit ${cfg.className}`}>
+                              <Icon className="h-3 w-3" />
+                              {cfg.label}
+                            </span>
+                            <span className="text-[11px] tabular-nums text-muted-foreground pl-1">
+                              {m.delta_pct >= 0 ? "+" : ""}{(m.delta_pct * 100).toFixed(1)}% · {m.current_per_sqm.toFixed(2)} €/m²
+                            </span>
+                          </div>
+                        </td>
+                      );
+                    })()}
                     <td className="py-3.5 px-4">
                       <span className="text-muted-foreground group-hover:text-primary transition-colors">›</span>
                     </td>

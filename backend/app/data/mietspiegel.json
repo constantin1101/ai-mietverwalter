@@ -1,0 +1,167 @@
+{
+  "_meta": {
+    "description": "Angebotsmieten (Kaltmiete) nach Stadt und Wohnfläche",
+    "source": "Kompiliert aus ImmobilienScout24 Wohnbarometer, Empirica Preisdatenbank, JLL Residential Profiles",
+    "data_year": 2024,
+    "note": "Marktpreise aus Inseraten — keine kommunalen Mietspiegel. Werte als Orientierung, nicht rechtsverbindlich.",
+    "updated": "2024-Q4"
+  },
+  "cities": {
+    "München": {
+      "display_name": "München",
+      "state": "Bayern",
+      "source": "ImmobilienScout24 Wohnbarometer 2024 / Empirica",
+      "data_year": 2024,
+      "bands": [
+        {"label": "Unter 40 m²", "sqm_min": 0,   "sqm_max": 40,  "min": 16.0, "avg": 21.5, "max": 30.0},
+        {"label": "40–60 m²",    "sqm_min": 40,  "sqm_max": 60,  "min": 14.0, "avg": 18.5, "max": 26.0},
+        {"label": "60–80 m²",    "sqm_min": 60,  "sqm_max": 80,  "min": 13.0, "avg": 17.0, "max": 24.0},
+        {"label": "80–100 m²",   "sqm_min": 80,  "sqm_max": 100, "min": 12.0, "avg": 16.0, "max": 22.5},
+        {"label": "Über 100 m²", "sqm_min": 100, "sqm_max": null,"min": 11.5, "avg": 15.0, "max": 21.0}
+      ]
+    },
+    "Berlin": {
+      "display_name": "Berlin",
+      "state": "Berlin",
+      "source": "ImmobilienScout24 Wohnbarometer 2024",
+      "data_year": 2024,
+      "bands": [
+        {"label": "Unter 40 m²", "sqm_min": 0,   "sqm_max": 40,  "min": 12.0, "avg": 16.5, "max": 24.0},
+        {"label": "40–60 m²",    "sqm_min": 40,  "sqm_max": 60,  "min": 11.0, "avg": 14.5, "max": 20.5},
+        {"label": "60–80 m²",    "sqm_min": 60,  "sqm_max": 80,  "min": 10.0, "avg": 13.5, "max": 18.5},
+        {"label": "80–100 m²",   "sqm_min": 80,  "sqm_max": 100, "min": 9.5,  "avg": 13.0, "max": 18.0},
+        {"label": "Über 100 m²", "sqm_min": 100, "sqm_max": null,"min": 9.0,  "avg": 12.5, "max": 17.0}
+      ]
+    },
+    "Hamburg": {
+      "display_name": "Hamburg",
+      "state": "Hamburg",
+      "source": "ImmobilienScout24 Wohnbarometer 2024 / JLL Residential",
+      "data_year": 2024,
+      "bands": [
+        {"label": "Unter 40 m²", "sqm_min": 0,   "sqm_max": 40,  "min": 13.0, "avg": 17.5, "max": 25.0},
+        {"label": "40–60 m²",    "sqm_min": 40,  "sqm_max": 60,  "min": 12.0, "avg": 15.5, "max": 22.0},
+        {"label": "60–80 m²",    "sqm_min": 60,  "sqm_max": 80,  "min": 11.0, "avg": 14.5, "max": 20.0},
+        {"label": "80–100 m²",   "sqm_min": 80,  "sqm_max": 100, "min": 10.5, "avg": 13.5, "max": 19.0},
+        {"label": "Über 100 m²", "sqm_min": 100, "sqm_max": null,"min": 10.0, "avg": 13.0, "max": 18.0}
+      ]
+    },
+    "Frankfurt am Main": {
+      "display_name": "Frankfurt am Main",
+      "state": "Hessen",
+      "source": "ImmobilienScout24 Wohnbarometer 2024 / JLL",
+      "data_year": 2024,
+      "bands": [
+        {"label": "Unter 40 m²", "sqm_min": 0,   "sqm_max": 40,  "min": 13.0, "avg": 17.5, "max": 26.0},
+        {"label": "40–60 m²",    "sqm_min": 40,  "sqm_max": 60,  "min": 12.0, "avg": 16.0, "max": 23.0},
+        {"label": "60–80 m²",    "sqm_min": 60,  "sqm_max": 80,  "min": 11.0, "avg": 15.0, "max": 21.0},
+        {"label": "80–100 m²",   "sqm_min": 80,  "sqm_max": 100, "min": 10.5, "avg": 14.0, "max": 20.0},
+        {"label": "Über 100 m²", "sqm_min": 100, "sqm_max": null,"min": 10.0, "avg": 13.5, "max": 19.0}
+      ]
+    },
+    "Stuttgart": {
+      "display_name": "Stuttgart",
+      "state": "Baden-Württemberg",
+      "source": "ImmobilienScout24 Wohnbarometer 2024",
+      "data_year": 2024,
+      "bands": [
+        {"label": "Unter 40 m²", "sqm_min": 0,   "sqm_max": 40,  "min": 13.0, "avg": 17.0, "max": 24.0},
+        {"label": "40–60 m²",    "sqm_min": 40,  "sqm_max": 60,  "min": 12.0, "avg": 15.5, "max": 22.0},
+        {"label": "60–80 m²",    "sqm_min": 60,  "sqm_max": 80,  "min": 11.0, "avg": 14.5, "max": 20.0},
+        {"label": "80–100 m²",   "sqm_min": 80,  "sqm_max": 100, "min": 10.5, "avg": 13.5, "max": 19.0},
+        {"label": "Über 100 m²", "sqm_min": 100, "sqm_max": null,"min": 10.0, "avg": 13.0, "max": 18.0}
+      ]
+    },
+    "Düsseldorf": {
+      "display_name": "Düsseldorf",
+      "state": "Nordrhein-Westfalen",
+      "source": "ImmobilienScout24 Wohnbarometer 2024",
+      "data_year": 2024,
+      "bands": [
+        {"label": "Unter 40 m²", "sqm_min": 0,   "sqm_max": 40,  "min": 11.5, "avg": 15.0, "max": 22.0},
+        {"label": "40–60 m²",    "sqm_min": 40,  "sqm_max": 60,  "min": 10.5, "avg": 13.5, "max": 19.0},
+        {"label": "60–80 m²",    "sqm_min": 60,  "sqm_max": 80,  "min": 10.0, "avg": 12.5, "max": 17.5},
+        {"label": "80–100 m²",   "sqm_min": 80,  "sqm_max": 100, "min": 9.5,  "avg": 12.0, "max": 16.5},
+        {"label": "Über 100 m²", "sqm_min": 100, "sqm_max": null,"min": 9.0,  "avg": 11.5, "max": 16.0}
+      ]
+    },
+    "Köln": {
+      "display_name": "Köln",
+      "state": "Nordrhein-Westfalen",
+      "source": "ImmobilienScout24 Wohnbarometer 2024",
+      "data_year": 2024,
+      "bands": [
+        {"label": "Unter 40 m²", "sqm_min": 0,   "sqm_max": 40,  "min": 12.0, "avg": 15.5, "max": 22.0},
+        {"label": "40–60 m²",    "sqm_min": 40,  "sqm_max": 60,  "min": 11.0, "avg": 14.0, "max": 20.0},
+        {"label": "60–80 m²",    "sqm_min": 60,  "sqm_max": 80,  "min": 10.0, "avg": 13.0, "max": 18.0},
+        {"label": "80–100 m²",   "sqm_min": 80,  "sqm_max": 100, "min": 9.5,  "avg": 12.5, "max": 17.5},
+        {"label": "Über 100 m²", "sqm_min": 100, "sqm_max": null,"min": 9.0,  "avg": 12.0, "max": 17.0}
+      ]
+    },
+    "Nürnberg": {
+      "display_name": "Nürnberg",
+      "state": "Bayern",
+      "source": "ImmobilienScout24 Wohnbarometer 2024 / Empirica",
+      "data_year": 2024,
+      "bands": [
+        {"label": "Unter 40 m²", "sqm_min": 0,   "sqm_max": 40,  "min": 10.0, "avg": 13.0, "max": 19.0},
+        {"label": "40–60 m²",    "sqm_min": 40,  "sqm_max": 60,  "min": 9.0,  "avg": 12.0, "max": 17.0},
+        {"label": "60–80 m²",    "sqm_min": 60,  "sqm_max": 80,  "min": 8.5,  "avg": 11.0, "max": 15.5},
+        {"label": "80–100 m²",   "sqm_min": 80,  "sqm_max": 100, "min": 8.0,  "avg": 10.5, "max": 15.0},
+        {"label": "Über 100 m²", "sqm_min": 100, "sqm_max": null,"min": 7.5,  "avg": 10.0, "max": 14.0}
+      ]
+    },
+    "Leipzig": {
+      "display_name": "Leipzig",
+      "state": "Sachsen",
+      "source": "ImmobilienScout24 Wohnbarometer 2024",
+      "data_year": 2024,
+      "bands": [
+        {"label": "Unter 40 m²", "sqm_min": 0,   "sqm_max": 40,  "min": 8.0,  "avg": 11.0, "max": 17.0},
+        {"label": "40–60 m²",    "sqm_min": 40,  "sqm_max": 60,  "min": 7.5,  "avg": 10.0, "max": 15.0},
+        {"label": "60–80 m²",    "sqm_min": 60,  "sqm_max": 80,  "min": 7.0,  "avg": 9.0,  "max": 13.5},
+        {"label": "80–100 m²",   "sqm_min": 80,  "sqm_max": 100, "min": 6.5,  "avg": 8.5,  "max": 13.0},
+        {"label": "Über 100 m²", "sqm_min": 100, "sqm_max": null,"min": 6.0,  "avg": 8.0,  "max": 12.5}
+      ]
+    },
+    "Dresden": {
+      "display_name": "Dresden",
+      "state": "Sachsen",
+      "source": "ImmobilienScout24 Wohnbarometer 2024",
+      "data_year": 2024,
+      "bands": [
+        {"label": "Unter 40 m²", "sqm_min": 0,   "sqm_max": 40,  "min": 8.0,  "avg": 10.5, "max": 16.0},
+        {"label": "40–60 m²",    "sqm_min": 40,  "sqm_max": 60,  "min": 7.5,  "avg": 9.5,  "max": 14.5},
+        {"label": "60–80 m²",    "sqm_min": 60,  "sqm_max": 80,  "min": 7.0,  "avg": 9.0,  "max": 13.5},
+        {"label": "80–100 m²",   "sqm_min": 80,  "sqm_max": 100, "min": 6.5,  "avg": 8.5,  "max": 13.0},
+        {"label": "Über 100 m²", "sqm_min": 100, "sqm_max": null,"min": 6.0,  "avg": 8.0,  "max": 12.5}
+      ]
+    },
+    "Hannover": {
+      "display_name": "Hannover",
+      "state": "Niedersachsen",
+      "source": "ImmobilienScout24 Wohnbarometer 2024",
+      "data_year": 2024,
+      "bands": [
+        {"label": "Unter 40 m²", "sqm_min": 0,   "sqm_max": 40,  "min": 9.5,  "avg": 12.5, "max": 18.0},
+        {"label": "40–60 m²",    "sqm_min": 40,  "sqm_max": 60,  "min": 8.5,  "avg": 11.5, "max": 16.0},
+        {"label": "60–80 m²",    "sqm_min": 60,  "sqm_max": 80,  "min": 8.0,  "avg": 10.5, "max": 15.0},
+        {"label": "80–100 m²",   "sqm_min": 80,  "sqm_max": 100, "min": 7.5,  "avg": 10.0, "max": 14.5},
+        {"label": "Über 100 m²", "sqm_min": 100, "sqm_max": null,"min": 7.0,  "avg": 9.5,  "max": 14.0}
+      ]
+    },
+    "Bremen": {
+      "display_name": "Bremen",
+      "state": "Bremen",
+      "source": "ImmobilienScout24 Wohnbarometer 2024",
+      "data_year": 2024,
+      "bands": [
+        {"label": "Unter 40 m²", "sqm_min": 0,   "sqm_max": 40,  "min": 9.0,  "avg": 12.0, "max": 18.0},
+        {"label": "40–60 m²",    "sqm_min": 40,  "sqm_max": 60,  "min": 8.5,  "avg": 11.0, "max": 15.5},
+        {"label": "60–80 m²",    "sqm_min": 60,  "sqm_max": 80,  "min": 8.0,  "avg": 10.0, "max": 14.5},
+        {"label": "80–100 m²",   "sqm_min": 80,  "sqm_max": 100, "min": 7.5,  "avg": 9.5,  "max": 14.0},
+        {"label": "Über 100 m²", "sqm_min": 100, "sqm_max": null,"min": 7.0,  "avg": 9.0,  "max": 13.5}
+      ]
+    }
+  }
+}

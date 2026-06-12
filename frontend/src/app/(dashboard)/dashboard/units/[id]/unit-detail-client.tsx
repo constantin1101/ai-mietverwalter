@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import type { UnitDetail, Deadline } from "@/types/api";
+import { useState, useEffect } from "react";
+import type { UnitDetail, Deadline, MarketComparison } from "@/types/api";
 import { cn } from "@/lib/utils";
-import { FileText, ExternalLink, Loader2 } from "lucide-react";
+import { FileText, ExternalLink, Loader2, TrendingUp, TrendingDown, Minus } from "lucide-react";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL!;
 
@@ -56,6 +56,157 @@ const DEADLINE_TYPE_LABEL: Record<string, string> = {
   inspection: "Besichtigung",
   custom: "Sonstiges",
 };
+
+// ── Market comparison ─────────────────────────────────────────────────────────
+
+function MarketComparisonSection({
+  city, areaSqm, baseRent,
+}: { city: string; areaSqm: number; baseRent: number }) {
+  const [market, setMarket] = useState<MarketComparison | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL!;
+    fetch(
+      `${BACKEND_URL}/mietspiegel/${encodeURIComponent(city)}/lookup?area_sqm=${areaSqm}`
+    )
+      .then((r) => (r.ok ? r.json() : null))
+      .then(setMarket)
+      .catch(() => setMarket(null))
+      .finally(() => setLoading(false));
+  }, [city, areaSqm]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center gap-2 py-4 text-muted-foreground text-sm">
+        <Loader2 className="h-4 w-4 animate-spin" /> Marktdaten werden geladen…
+      </div>
+    );
+  }
+
+  if (!market) {
+    return (
+      <p className="text-[13px] text-muted-foreground py-2">
+        Keine Marktdaten für <strong>{city}</strong> verfügbar.
+      </p>
+    );
+  }
+
+  const currentPerSqm = baseRent / areaSqm;
+  const deltaPct = (currentPerSqm - market.rent_avg) / market.rent_avg;
+  const deltaEur = currentPerSqm - market.rent_avg;
+  const bucket: "below" | "at" | "above" =
+    deltaPct < -0.05 ? "below" : deltaPct > 0.05 ? "above" : "at";
+
+  // Monthly figures
+  const marketRentAtAvg = market.rent_avg * areaSqm;
+  const monthlyPotential = marketRentAtAvg - baseRent;
+
+  // Position bar percentages — clamp 0–100
+  const range = market.rent_max - market.rent_min || 1;
+  const currentPct = Math.min(100, Math.max(0, ((currentPerSqm - market.rent_min) / range) * 100));
+  const avgPct = Math.min(100, Math.max(0, ((market.rent_avg - market.rent_min) / range) * 100));
+
+  const bucketConfig = {
+    below: {
+      label: "Unter Marktniveau",
+      badgeClass: "bg-red-50 text-red-700 border-red-200",
+      markerClass: "bg-red-500",
+      Icon: TrendingDown,
+      iconClass: "text-red-500",
+    },
+    at: {
+      label: "Marktgerecht",
+      badgeClass: "bg-green-50 text-green-700 border-green-200",
+      markerClass: "bg-green-500",
+      Icon: Minus,
+      iconClass: "text-green-500",
+    },
+    above: {
+      label: "Über Marktniveau",
+      badgeClass: "bg-blue-50 text-blue-700 border-blue-200",
+      markerClass: "bg-blue-500",
+      Icon: TrendingUp,
+      iconClass: "text-blue-500",
+    },
+  }[bucket];
+
+  return (
+    <div className="rounded-xl border border-border bg-stone-50/40 p-4 space-y-4">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-[13px] font-semibold text-foreground">Marktvergleich</p>
+          <p className="text-[11px] text-muted-foreground mt-0.5">
+            {market.city} · {market.band_label} · {market.data_year}
+          </p>
+        </div>
+        <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium border ${bucketConfig.badgeClass}`}>
+          <bucketConfig.Icon className={`h-3 w-3 ${bucketConfig.iconClass}`} />
+          {bucketConfig.label}
+        </span>
+      </div>
+
+      {/* Key figures */}
+      <div className="grid grid-cols-3 gap-3">
+        <div>
+          <p className="text-[11px] text-muted-foreground">Ihre Miete/m²</p>
+          <p className="text-[18px] font-bold tabular-nums text-foreground mt-0.5">
+            {currentPerSqm.toFixed(2)} €
+          </p>
+        </div>
+        <div>
+          <p className="text-[11px] text-muted-foreground">Markt-Ø/m²</p>
+          <p className="text-[18px] font-bold tabular-nums text-primary mt-0.5">
+            {market.rent_avg.toFixed(2)} €
+          </p>
+        </div>
+        <div>
+          <p className="text-[11px] text-muted-foreground">Abweichung</p>
+          <p className={`text-[18px] font-bold tabular-nums mt-0.5 ${
+            deltaEur < 0 ? "text-red-600" : deltaEur > 0 ? "text-blue-600" : "text-green-600"
+          }`}>
+            {deltaEur >= 0 ? "+" : ""}{deltaEur.toFixed(2)} €
+          </p>
+        </div>
+      </div>
+
+      {/* Position bar */}
+      <div>
+        <div className="relative h-4 bg-stone-200 rounded-full">
+          {/* Avg reference line */}
+          <div
+            className="absolute top-0 bottom-0 w-0.5 bg-stone-400 z-10"
+            style={{ left: `${avgPct}%` }}
+          />
+          {/* Current position dot */}
+          <div
+            className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-2 border-white shadow z-20 ${bucketConfig.markerClass}`}
+            style={{ left: `calc(${currentPct}% - 8px)` }}
+            title={`Ihre Miete: ${currentPerSqm.toFixed(2)} €/m²`}
+          />
+        </div>
+        <div className="flex items-center justify-between mt-1.5">
+          <span className="text-[10px] text-muted-foreground">{market.rent_min.toFixed(0)} €/m² Min</span>
+          <span className="text-[10px] text-stone-400">Ø {market.rent_avg.toFixed(0)} €/m²</span>
+          <span className="text-[10px] text-muted-foreground">Max {market.rent_max.toFixed(0)} €/m²</span>
+        </div>
+      </div>
+
+      {/* Potential (only if below market) */}
+      {bucket === "below" && monthlyPotential > 0 && (
+        <div className="flex items-center justify-between bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
+          <p className="text-[12px] text-amber-800">
+            Potenzial bei Marktmiete ({market.rent_avg.toFixed(2)} €/m²)
+          </p>
+          <p className="text-[14px] font-bold tabular-nums text-amber-800">
+            +{monthlyPotential.toLocaleString("de-DE", { minimumFractionDigits: 0, maximumFractionDigits: 0 })} €/Monat
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
 
 // ── Tabs ───────────────────────────────────────────────────────────────────────
 export function UnitDetailClient({ unit, token }: { unit: UnitDetail; token: string }) {
@@ -201,6 +352,20 @@ export function UnitDetailClient({ unit, token }: { unit: UnitDetail; token: str
                 <p className="text-2xl font-bold tabular-nums text-green-700 mt-1">
                   {(unit.lease.base_rent / unit.area_sqm).toFixed(2)} €/m²
                 </p>
+              </div>
+            )}
+
+            {/* Market comparison — only when city + area are known */}
+            {unit.property.city && unit.area_sqm && (
+              <div>
+                <h3 className="text-[13px] font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+                  Marktvergleich
+                </h3>
+                <MarketComparisonSection
+                  city={unit.property.city}
+                  areaSqm={unit.area_sqm}
+                  baseRent={unit.lease.base_rent}
+                />
               </div>
             )}
           </div>

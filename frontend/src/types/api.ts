@@ -1,5 +1,68 @@
 // Auto-mirrors the backend Pydantic response models
 
+export interface MietspiegelBand {
+  label: string;
+  sqm_min: number;
+  sqm_max: number | null;
+  min: number;
+  avg: number;
+  max: number;
+}
+
+export interface CityMietspiegel {
+  city: string;
+  state: string;
+  source: string;
+  data_year: number;
+  bands: MietspiegelBand[];
+}
+
+export interface MarketComparison {
+  city: string;
+  city_supported: boolean;
+  band_label: string;
+  sqm_min: number;
+  sqm_max: number | null;
+  rent_min: number;
+  rent_avg: number;
+  rent_max: number;
+  data_year: number;
+  source: string;
+}
+
+export interface UnitMarketData {
+  unit_id: string;
+  address: string;
+  tenant_name: string;
+  area_sqm: number;
+  base_rent: number;
+  current_per_sqm: number;
+  market_avg: number;
+  market_min: number;
+  market_max: number;
+  band_label: string;
+  delta_per_sqm: number;
+  delta_pct: number;
+  bucket: "below" | "at" | "above";
+  monthly_potential: number;
+  city: string;
+  city_supported: boolean;
+  data_year: number;
+}
+
+export interface PortfolioMarketSummary {
+  total_units_compared: number;
+  units_below_market: number;
+  units_at_market: number;
+  units_above_market: number;
+  total_monthly_potential: number;
+}
+
+export interface PortfolioMarketOverview {
+  units: UnitMarketData[];
+  summary: PortfolioMarketSummary;
+}
+
 export interface StaffelAlert {
   unit_id: string;
   address: string;
