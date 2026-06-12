@@ -7,7 +7,7 @@
 
 ## 🔥 In Progress
 
-*(Sprint 4 — Mietspiegel)*
+*(Sprint 5 — Monetarisierung)*
 
 ---
 
@@ -112,7 +112,19 @@
 
 - [x] **Dashboard-Widget** `components/mietspiegel-widget.tsx`: Kompakte Karte mit Stadt-Dropdown, Ø-Wert für 40–60 m², Mini-Balken für alle Bänder, Link zur vollen Seite [Prio: H] [Effort: S]
 
-- [ ] **Einheiten-Detail, Tab Finanzen**: Mietspiegel-Card unterhalb der Miete — aktueller €/m² vs. Markt-Ø, Positionsbalken, Badge ("Unter/Im/Über Marktniveau") [Prio: M] [Effort: M]
+- [x] **Einheiten-Detail, Tab Finanzen**: Mietspiegel-Card unterhalb der Miete — aktueller €/m² vs. Markt-Ø, Positionsbalken, Badge ("Unter/Im/Über Marktniveau") [Prio: M] [Effort: M]
+
+- [x] **Portfolio-Marktvergleich**: `/dashboard/mietspiegel` Tab "Mein Portfolio" — Ranking aller Einheiten mit Positionsbalken (min/avg/max), Bucket-Filter-Pills, Sortierung nach Potenzial/Abweichung/Adresse [Prio: M] [Effort: M]
+
+- [x] **Dashboard KPI-Card "Marktpotenzial"**: Amber wenn Einheiten unter Markt, Link zu gefilterter Einheitenliste [Prio: M] [Effort: S]
+
+- [x] **Units-Liste Marktlage-Spalte**: Badge + Delta % je Einheit, Filter-Dropdown "Alle Marktlagen" [Prio: M] [Effort: S]
+
+- [x] **Einheiten bearbeiten**: `PATCH /units/{id}` + `UnitEditDialog` (4-Tab-Formular + Diff-Review-Schritt) [Prio: H] [Effort: L]
+
+- [ ] **DB-Migration 0008**: Optionale Tabelle `mietspiegel_overrides` [Prio: L] [Effort: S]
+
+- [ ] `routers/units.py` — `GET /units/kpis` um `units_below_market_count` und `monthly_potential` ergänzen [Prio: M] [Effort: XS]
 
 ---
 
@@ -220,3 +232,6 @@
 - [x] 2026-06-12 — Sprint 3 abgeschlossen: Dashboard, Einheiten-Listen, Kalender, Dokumente, Tracker
 - [x] 2026-06-12 — Excel-Export Redesign: 8-Sheet Workbook (Deckblatt, Portfolio, Mietverträge, Mieter, Finanzen, Fristen, Mietentwicklung, Dokumente) + ExportDialog mit Filtern
 - [x] 2026-06-12 — Mietspiegel Feature: Daten 12 Städte, Backend-API, Seite /dashboard/mietspiegel + Dashboard-Widget
+- [x] 2026-06-12 — Marktvergleich an 3 UI-Stellen: Unit-Detail Finanzen-Tab, Units-Liste Spalte, Dashboard KPI-Card
+- [x] 2026-06-12 — Portfolio-Marktvergleich: /dashboard/mietspiegel Tab "Mein Portfolio" mit visuellem Ranking aller Einheiten
+- [x] 2026-06-12 — Einheiten bearbeiten: PATCH /units/{id} + UnitEditDialog (4-Tab + Diff-Review)

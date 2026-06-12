@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import type { UnitDetail, Deadline, MarketComparison } from "@/types/api";
 import { cn } from "@/lib/utils";
-import { FileText, ExternalLink, Loader2, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { FileText, ExternalLink, Loader2, TrendingUp, TrendingDown, Minus, Pencil } from "lucide-react";
+import { UnitEditDialog } from "@/components/unit-edit-dialog";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL!;
 
@@ -209,9 +210,11 @@ function MarketComparisonSection({
 }
 
 // ── Tabs ───────────────────────────────────────────────────────────────────────
-export function UnitDetailClient({ unit, token }: { unit: UnitDetail; token: string }) {
+export function UnitDetailClient({ unit: initialUnit, token }: { unit: UnitDetail; token: string }) {
+  const [unit, setUnit] = useState<UnitDetail>(initialUnit);
   const [activeTab, setActiveTab] = useState<Tab>("uebersicht");
   const [openingDoc, setOpeningDoc] = useState<string | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
 
   async function openDocument(docId: string) {
     setOpeningDoc(docId);
@@ -239,33 +242,50 @@ export function UnitDetailClient({ unit, token }: { unit: UnitDetail; token: str
     : unit.lease.rent_type;
 
   return (
+    <>
+    <UnitEditDialog
+      open={editOpen}
+      onClose={() => setEditOpen(false)}
+      unit={unit}
+      onSaved={(updated) => { setUnit(updated); setEditOpen(false); }}
+    />
     <div className="bg-white rounded-2xl border border-border shadow-sm overflow-hidden">
       {/* Tab bar */}
-      <div className="flex border-b border-border overflow-x-auto">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={cn(
-              "px-5 py-3.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors",
-              activeTab === tab.id
-                ? "border-primary text-primary bg-green-50/40"
-                : "border-transparent text-muted-foreground hover:text-foreground hover:bg-stone-50",
-            )}
-          >
-            {tab.label}
-            {tab.id === "fristen" && unit.deadlines.length > 0 && (
-              <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold">
-                {unit.deadlines.length}
-              </span>
-            )}
-            {tab.id === "dokumente" && unit.documents.length > 0 && (
-              <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full bg-stone-200 text-stone-600 text-[10px] font-bold">
-                {unit.documents.length}
-              </span>
-            )}
-          </button>
-        ))}
+      <div className="flex items-center border-b border-border overflow-x-auto">
+        <div className="flex flex-1">
+          {TABS.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "px-5 py-3.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors",
+                activeTab === tab.id
+                  ? "border-primary text-primary bg-green-50/40"
+                  : "border-transparent text-muted-foreground hover:text-foreground hover:bg-stone-50",
+              )}
+            >
+              {tab.label}
+              {tab.id === "fristen" && unit.deadlines.length > 0 && (
+                <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold">
+                  {unit.deadlines.length}
+                </span>
+              )}
+              {tab.id === "dokumente" && unit.documents.length > 0 && (
+                <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full bg-stone-200 text-stone-600 text-[10px] font-bold">
+                  {unit.documents.length}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+        {/* Edit button */}
+        <button
+          onClick={() => setEditOpen(true)}
+          className="shrink-0 mx-3 inline-flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-medium text-muted-foreground border border-border rounded-xl hover:bg-accent hover:text-foreground transition-colors"
+        >
+          <Pencil className="h-3.5 w-3.5" />
+          Bearbeiten
+        </button>
       </div>
 
       <div className="p-6">
@@ -481,5 +501,6 @@ export function UnitDetailClient({ unit, token }: { unit: UnitDetail; token: str
 
       </div>
     </div>
+    </>
   );
 }

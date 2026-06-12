@@ -543,3 +543,130 @@ async def get_unit_detail(
         deadlines=deadlines,
         documents=documents,
     )
+
+
+# ── PATCH request models ───────────────────────────────────────────────────────
+
+class UnitPatch(BaseModel):
+    unit_number: Optional[str] = None
+    floor: Optional[int] = None
+    area_sqm: Optional[float] = None
+    rooms: Optional[float] = None
+    has_cellar: Optional[bool] = None
+    has_parking: Optional[bool] = None
+    parking_number: Optional[str] = None
+
+class LeasePatch(BaseModel):
+    base_rent: Optional[float] = None
+    operating_costs: Optional[float] = None
+    deposit: Optional[float] = None
+    payment_day: Optional[int] = None
+    payment_method: Optional[str] = None
+    start_date: Optional[date] = None
+    end_date: Optional[date] = None
+    is_fixed_term: Optional[bool] = None
+    notice_period_months: Optional[int] = None
+    rent_type: Optional[str] = None
+    cosmetic_repairs_clause: Optional[str] = None
+    pets_allowed: Optional[bool] = None
+    subletting_allowed: Optional[bool] = None
+
+class TenantPatch(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+
+class UnitEditPayload(BaseModel):
+    unit: Optional[UnitPatch] = None
+    lease: Optional[LeasePatch] = None
+    tenant: Optional[TenantPatch] = None
+
+
+# ── PATCH /units/{id} ─────────────────────────────────────────────────────────
+
+@router.patch("/{unit_id}", response_model=UnitDetail)
+async def update_unit(
+    unit_id: str,
+    payload: UnitEditPayload,
+    current_user: CurrentUser,
+    db: SupabaseClient,
+) -> UnitDetail:
+    uid = current_user.sub
+
+    # Verify ownership
+    check = await _run(db, lambda: db.table("units")
+        .select("id")
+        .eq("id", unit_id)
+        .eq("user_id", uid)
+        .maybe_single()
+        .execute())
+    if not check.data:
+        raise HTTPException(status_code=404, detail="Einheit nicht gefunden.")
+
+    # ── Update units table ────────────────────────────────────────────────────
+    if payload.unit is not None:
+        unit_data = payload.unit.model_dump(exclude_unset=True)
+        if unit_data:
+            await _run(db, lambda: db.table("units")
+                .update(unit_data)
+                .eq("id", unit_id)
+                .execute())
+
+    # ── Update active lease ───────────────────────────────────────────────────
+    if payload.lease is not None:
+        lease_data = payload.lease.model_dump(exclude_unset=True)
+        if lease_data:
+            # Validate before writing
+            if "base_rent" in lease_data and (lease_data["base_rent"] is None or lease_data["base_rent"] <= 0):
+                raise HTTPException(status_code=422, detail="Kaltmiete muss größer als 0 sein.")
+            if "payment_day" in lease_data and lease_data["payment_day"] is not None:
+                if not (1 <= lease_data["payment_day"] <= 28):
+                    raise HTTPException(status_code=422, detail="Zahltag muss zwischen 1 und 28 liegen.")
+
+            # Convert date objects to ISO strings for Supabase
+            for key in ("start_date", "end_date"):
+                if key in lease_data and isinstance(lease_data[key], date):
+                    lease_data[key] = lease_data[key].isoformat()
+
+            lease_resp = await _run(db, lambda: db.table("leases")
+                .select("id")
+                .eq("unit_id", unit_id)
+                .eq("is_active", True)
+                .maybe_single()
+                .execute())
+            if not lease_resp.data:
+                raise HTTPException(status_code=404, detail="Kein aktiver Mietvertrag gefunden.")
+            lease_id = lease_resp.data["id"]
+
+            await _run(db, lambda: db.table("leases")
+                .update(lease_data)
+                .eq("id", lease_id)
+                .execute())
+
+    # ── Update primary tenant ─────────────────────────────────────────────────
+    if payload.tenant is not None:
+        tenant_data = payload.tenant.model_dump(exclude_unset=True)
+        if tenant_data:
+            lease_resp2 = await _run(db, lambda: db.table("leases")
+                .select("id")
+                .eq("unit_id", unit_id)
+                .eq("is_active", True)
+                .maybe_single()
+                .execute())
+            if lease_resp2.data:
+                lt_resp = await _run(db, lambda: db.table("lease_tenants")
+                    .select("tenant_id")
+                    .eq("lease_id", lease_resp2.data["id"])
+                    .eq("is_primary", True)
+                    .maybe_single()
+                    .execute())
+                if lt_resp.data:
+                    tenant_id = lt_resp.data["tenant_id"]
+                    await _run(db, lambda: db.table("tenants")
+                        .update(tenant_data)
+                        .eq("id", tenant_id)
+                        .execute())
+
+    # Return refreshed detail
+    return await get_unit_detail(unit_id, current_user, db)

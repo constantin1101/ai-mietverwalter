@@ -96,6 +96,9 @@ export const api = {
   postForm: <T>(path: string, form: FormData, opts?: RequestOptions) =>
     request<T>(path, { ...opts, method: "POST", body: form }),
 
+  patch: <T>(path: string, body?: unknown, opts?: RequestOptions) =>
+    request<T>(path, { ...opts, method: "PATCH", body }),
+
   delete: <T>(path: string, opts?: RequestOptions) =>
     request<T>(path, { ...opts, method: "DELETE" }),
 };
