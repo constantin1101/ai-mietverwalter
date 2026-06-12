@@ -1,15 +1,51 @@
+import { createClient } from "@/lib/supabase/server";
+import { api } from "@/lib/api/server";
+import type { UnitCard } from "@/types/api";
+import { UnitsClient } from "./units-client";
 import { ButtonLink } from "@/components/ui/button-link";
+import { Plus } from "lucide-react";
 
-export default function UnitsPage() {
-  return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Einheiten</h1>
-        <ButtonLink href="/dashboard/units/new">+ Hinzufügen</ButtonLink>
+export default async function UnitsPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data: session } = await supabase.auth.getSession();
+  const token = session.session?.access_token ?? "";
+
+  let units: UnitCard[] = [];
+  try {
+    units = await api.get<UnitCard[]>("/units", user);
+  } catch {
+    // Backend unavailable — show empty state
+  }
+
+  if (units.length === 0) {
+    return (
+      <div className="max-w-6xl mx-auto px-6 py-8">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-2xl font-bold">Einheiten</h1>
+            <p className="text-[14px] text-muted-foreground mt-0.5">Noch keine Einheiten vorhanden</p>
+          </div>
+          <ButtonLink href="/dashboard/units/new">
+            <Plus className="h-4 w-4 mr-1.5" />
+            Einheit hinzufügen
+          </ButtonLink>
+        </div>
+        <div className="bg-white rounded-2xl border border-dashed border-border p-12 flex flex-col items-center text-center gap-5">
+          <div className="w-16 h-16 rounded-2xl bg-accent flex items-center justify-center text-3xl">🪄</div>
+          <div className="space-y-1.5">
+            <p className="text-[17px] font-semibold">Lade deinen ersten Mietvertrag hoch</p>
+            <p className="text-[15px] text-muted-foreground max-w-sm leading-relaxed">
+              Foto oder PDF — AI extrahiert alle Daten in unter 60 Sekunden.
+            </p>
+          </div>
+          <ButtonLink href="/dashboard/units/new" size="lg">Mietvertrag hochladen</ButtonLink>
+        </div>
       </div>
-      <p className="text-muted-foreground text-sm">
-        Noch keine Einheiten — lade deinen ersten Mietvertrag hoch.
-      </p>
-    </div>
-  );
+    );
+  }
+
+  return <UnitsClient units={units} token={token} />;
 }

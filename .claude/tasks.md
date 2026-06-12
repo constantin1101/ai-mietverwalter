@@ -7,165 +7,141 @@
 
 ## 🔥 In Progress
 
-- [x] Supabase Projekt erstellen (EU Frankfurt) — vnzvxaljtvlzrlmdekpc
+*(Sprint 4 — Monetarisierung)*
 
 ---
 
-## 📌 Sprint 1 — Foundation (Wo 1–2)
-*Ziel: Frontend + Backend laufen lokal, Auth funktioniert, Dokument kann hochgeladen werden*
+## ✅ Sprint 1 — Foundation (abgeschlossen)
 
-### Frontend-Setup (Next.js)
-- [x] Next.js 15 App initialisieren in `frontend/` (App Router, TypeScript, Tailwind)
-- [x] shadcn/ui initialisieren + Basis-Komponenten installieren
-- [x] Supabase Client-Integration (Browser-Client + Server-Client)
-- [x] `frontend/.env.local` + `.env.example` anlegen
-- [x] API-Client `frontend/src/lib/api/client.ts` — Fetch-Wrapper für FastAPI-Calls
-
-### Backend-Setup (FastAPI / Python)
-- [x] FastAPI App initialisieren in `backend/` mit uv
-- [x] Projektstruktur anlegen (`routers/`, `services/`, `models/`, `core/`)
-- [x] `pyproject.toml` mit Dependencies (fastapi, pydantic, anthropic, mistralai, supabase, stripe, openpyxl, python-multipart, python-dateutil)
-- [x] `backend/app/core/config.py` — pydantic-settings mit allen Env-Vars
-- [x] `backend/.env` + `.env.example` anlegen
-- [x] Dockerfile für Backend
-- [x] CORS-Konfiguration (Frontend-Origin erlauben)
-
-### Supabase
-- [x] Supabase Projekt erstellen (EU Frankfurt)
-- [x] DB-Schema migrieren (12 Tabellen inkl. RLS — via SQL Editor)
-- [x] Row Level Security (RLS) Policies für alle Tabellen
-- [x] Supabase Storage Bucket `documents` (privat)
-
-### Auth
-- [x] Supabase Auth einrichten (Email + Magic Link aktiv, site URL konfiguriert)
-- [x] Frontend: Login-Seite `(auth)/auth/login/page.tsx`
-- [x] Frontend: Register-Seite `(auth)/auth/register/page.tsx`
-- [x] Frontend: Auth-Callback Route `(auth)/auth/callback/route.ts`
-- [x] Frontend: `proxy.ts` (Next.js 16, Route Protection — ersetzt middleware.ts)
-- [x] Backend: JWT-Validierung `core/auth.py` — Supabase Token prüfen
-- [x] Backend: `get_current_user` FastAPI Dependency
-- [x] Frontend: Dashboard Shell mit Sidebar
-
-### Upload
-- [x] Frontend: Dokument-Upload UI (Drag & Drop, PDF/Bild) — `components/documents/upload-dropzone.tsx`
-- [x] Backend: `routers/upload.py` — POST `/upload` (Datei → Supabase Storage)
-- [x] Backend: Datei-Validierung (Typ: PDF/JPG/PNG, max 20 MB)
+- [x] Next.js 16 App + shadcn/ui + Supabase-Clients + `.env`-Setup
+- [x] API-Client (`lib/api/client.ts`) mit Timeout-Handling
+- [x] FastAPI Backend mit uv, Projektstruktur, Dockerfile
+- [x] `core/config.py` mit pydantic-settings
+- [x] Supabase: Projekt (EU Frankfurt), 12 Tabellen, RLS, Storage Bucket `documents`
+- [x] Auth: Login/Register (Email+Passwort), Callback, `proxy.ts` Route-Guard
+- [x] Backend: JWT-Validierung via Supabase JWKS (ES256 + HS256 Fallback)
+- [x] Upload: Drag & Drop UI + `POST /upload` → Supabase Storage
 
 ---
 
-## 📌 Sprint 2 — AI-Pipeline (Wo 3–5)
-*Ziel: Mietvertrag hochladen → strukturierte Daten mit Confidence-Scores*
+## ✅ Sprint 2 — AI-Pipeline (abgeschlossen)
 
-### OCR (Python)
-- [ ] Backend: `services/ocr/mistral.py` — Mistral OCR Client (async) [Prio: H] [Effort: S]
-- [ ] Backend: `services/ocr/pipeline.py` — PDF → Seiten-Text zusammenfügen [Prio: H] [Effort: M]
-- [ ] Backend: Fallback auf AWS Textract (bei Mistral-Ausfall) [Prio: M] [Effort: M]
+### OCR
+- [x] `services/ocr/pipeline.py` — PyMuPDF direkter Text-Extrakt (digitale PDFs <100ms), Vision-LLM Fallback für Scans
+- [x] Modell: `gemini-2.5-flash` für OCR (schnell, multimodal)
 
-### AI-Extraktion (Python)
-- [ ] Backend: `models/extraction.py` — Pydantic-Models (ExtractionResult, ConfidenceField[T], alle Sub-Models) [Prio: H] [Effort: M]
-- [ ] Backend: `services/ai/prompts/extract_lease.py` — System-Prompt + User-Prompt-Builder [Prio: H] [Effort: L]
-- [ ] Backend: `services/ai/extract.py` — Claude-Call via `anthropic.AsyncAnthropic`, tool_use, Pydantic-Validierung [Prio: H] [Effort: M]
-- [ ] Backend: `utils/deadline_generator.py` — Auto-Fristen aus ExtractionResult [Prio: H] [Effort: M]
-- [ ] Backend: `routers/extract.py` — POST `/extract` (Background Task: OCR + Claude) + POST `/extract/confirm` [Prio: H] [Effort: M]
-- [ ] Backend: Plausibilitäts-Checks (NK ≤ 50% Kaltmiete, Kaution ≤ 3 MM, Staffel-Chronologie) [Prio: H] [Effort: S]
-- [ ] Frontend: Korrekturdialog `components/documents/extraction-review.tsx` (Low-Confidence Felder hervorheben) [Prio: H] [Effort: L]
-- [ ] Frontend: Confidence-Badge-Komponente (grün/gelb/rot) [Prio: H] [Effort: S]
+### AI-Extraktion
+- [x] `models/extraction.py` — Pydantic v2 mit `ConfidenceField[T]`, `lease_terms`-Alias, alle Sub-Models
+- [x] `services/ai/prompts/extract_lease.py` — Deutscher Prompt mit Mietrecht-Defaults, flexibel
+- [x] `services/ai/extract.py` — OpenAI-kompatibler Proxy-Call, Pydantic-Validierung
+- [x] `utils/deadline_generator.py` — Auto-Fristen (Staffelmiete, Indexmiete, Vertragsende, NK)
+- [x] `routers/extract.py` — `POST /extract` + `POST /extract/confirm` (DB-Persistierung)
+- [x] Plausibilitäts-Checks (NK, Kaution, Staffel-Chronologie)
+- [x] Frontend: Extraction-Review-Dialog mit Confidence-Badges + Inline-Editing
+- [x] Frontend: 3-Schritt-Flow Upload → Analyse → Prüfen
+- [x] Modell optimiert: `gpt-5` → `gemini-2.5-flash` (3× schneller, 21/21 Felder)
 
-### Rechts-Check (Python)
-- [ ] Backend: `services/ai/legal_database.py` — BGH-Urteils-Datenbank Top 50 als Pydantic-Models [Prio: H] [Effort: L]
-- [ ] Backend: `services/ai/prompts/legal_analysis.py` — Klausel-Analyse-Prompt [Prio: H] [Effort: M]
-- [ ] Backend: `services/ai/legal_check.py` — Claude-Call für Rechts-Check, Risiko-Scoring [Prio: H] [Effort: M]
-- [ ] Backend: `routers/legal_check.py` — POST `/legal-check` [Prio: H] [Effort: S]
-- [ ] Frontend: Rechts-Check UI `components/units/legal-check-panel.tsx` [Prio: H] [Effort: M]
-
-### Mietspiegel (Python)
-- [ ] Backend: Mietspiegel-Daten Top-10-Städte als JSON-Fixture in DB laden [Prio: M] [Effort: L]
-- [ ] Backend: Vergleichs-Logik in `utils/rent_calculator.py` (Wohnfläche + Lage + Baujahr) [Prio: M] [Effort: M]
+### Test-Fixtures
+- [x] `test-fixtures/mietvertrag_bauer_festmiete.txt`
+- [x] `test-fixtures/mietvertrag_hoffmann_staffelmiete.txt`
+- [x] `test-fixtures/mietvertrag_wagner_indexmiete.txt`
 
 ---
 
-## 📌 Sprint 3 — Dashboard & UX (Wo 6–7)
-*Ziel: Vollständiges Dashboard mit allen Views*
+## ✅ Sprint 3 — Dashboard & UX (abgeschlossen)
 
-### Backend: Data-Endpoints (Python)
-- [ ] Backend: `routers/units.py` — CRUD für Properties, Units, Leases, Tenants [Prio: H] [Effort: M]
-- [ ] Backend: Portfolio-KPIs Endpoint (GET `/portfolio/kpis`) [Prio: H] [Effort: S]
-- [ ] Backend: `routers/export.py` — GET `/export/excel` (openpyxl Multi-Sheet) [Prio: H] [Effort: M]
-- [ ] Backend: Steuer-Export Anlage V (GET `/export/tax`) [Prio: M] [Effort: L]
+### Backend: Data-Endpoints
+- [x] `routers/units.py` — GET `/units`, GET `/units/kpis`, GET `/units/{id}`
+- [x] `routers/units.py` — GET `/units/trackers` (Staffel- & Indexmiete-Alerts)
+- [x] `routers/export.py` — GET `/export/excel` (openpyxl Multi-Sheet)
+- [x] `routers/documents.py` — GET `/documents`, POST `/documents/upload`, GET `/documents/{id}/url`
+- [x] `routers/deadlines.py` — GET `/deadlines` (alle Fristen mit Einheiten-Kontext)
+- [ ] GET `/export/tax` — Steuer-Export Anlage V → **verschoben auf Phase 2**
 
 ### Frontend: Portfolio-Übersicht
-- [ ] KPI-Cards (Gesamt-Kaltmiete, Anzahl Einheiten, ⌀ €/m², Vakanz-Rate) [Prio: H] [Effort: M]
-- [ ] Listen-Ansicht aller Einheiten [Prio: H] [Effort: M]
-- [ ] Karten-Ansicht (Mapbox oder Google Maps, Geocoding via API) [Prio: M] [Effort: L]
+- [x] Dashboard KPI-Cards mit echten Daten vom Backend
+- [x] Einheiten-Cards (Adresse, Mieter, Betrag, Status-Badge)
+- [x] Einheiten Listen-Ansicht (`/dashboard/units`) — filterbar nach Stadt, Mietart, Suche
+- [x] Excel-Export Button
 
-### Frontend: Einheiten-Detail (5 Tabs)
-- [ ] Tab 1: Stammdaten + Dokumente [Prio: H] [Effort: M]
-- [ ] Tab 2: Mieter-Informationen [Prio: H] [Effort: S]
-- [ ] Tab 3: Finanzielles + Mietverlauf-Chart [Prio: H] [Effort: M]
-- [ ] Tab 4: Termine & Fristen [Prio: H] [Effort: M]
-- [ ] Tab 5: Rechts-Check [Prio: H] [Effort: S]
+### Frontend: Einheiten-Detail
+- [x] Prominenter Header (Adresse, Miete, Mieter, Mietstart)
+- [x] Tab 1: Stammdaten (Objekt, Mieter, Vertrag)
+- [x] Tab 2: Finanzielles (Miete, Kaution, €/m²)
+- [x] Tab 3: Fristen (farbige Deadline-Badges)
+- [x] Tab 4: Dokumente (Liste + Öffnen via signierter URL)
+- [x] Tab 5: Rechts-Check (Placeholder für Phase 2)
+
+### Frontend: Dokumente-Seite
+- [x] `/dashboard/documents` — 9 Kategorien (Mietverträge, Übergabeprotokolle, etc.)
+- [x] Filter: Freitext (Dateiname, Adresse, Mieter) + Stadt
+- [x] Upload-Dialog: Drag & Drop, Dokumenttyp-Auswahl, Einheits-Zuordnung
+- [x] Dokument-Vorschau via signierter Supabase-Storage-URL
 
 ### Frontend: Spezial-Features
-- [ ] Indexmiete-Tracker ("Du verschenkst X€/Monat") — Daten vom Backend [Prio: H] [Effort: M]
-- [ ] Staffelmiete-Tracker mit nächster Stufe — Daten vom Backend [Prio: H] [Effort: M]
-- [ ] Fristen-Kalender (monatliche Ansicht) [Prio: M] [Effort: M]
-- [ ] Excel-Export Button (ruft Backend `/export/excel` auf) [Prio: H] [Effort: S]
-- [ ] Steuer-Export Button (ruft Backend `/export/tax` auf) [Prio: M] [Effort: S]
+- [x] Indexmiete-Tracker auf Dashboard ("Anpassung möglicherweise fällig")
+- [x] Staffelmiete-Tracker auf Dashboard (nächste Stufe + Countdown)
+- [x] Fristen-Kalender (`/dashboard/calendar`) — Monatsansicht mit farbigen Badges
 
 ---
 
-## 📌 Sprint 4 — Monetarisierung (Wo 8–9)
+## 📌 Sprint 4 — Monetarisierung
 *Ziel: Stripe läuft, Tiers werden enforced*
 
-### Backend (Python)
-- [ ] Backend: `services/stripe.py` — Stripe Python SDK Setup [Prio: H] [Effort: S]
-- [ ] Backend: `routers/stripe.py` — POST `/stripe/checkout` (Checkout Session) [Prio: H] [Effort: M]
-- [ ] Backend: POST `/stripe/webhook` — Subscription-Events verarbeiten, `user_subscriptions` updaten [Prio: H] [Effort: M]
-- [ ] Backend: `check_unit_limit` FastAPI Dependency — Tier-Enforcement [Prio: H] [Effort: M]
-- [ ] Backend: `PLAN_LIMITS` Dict in `core/config.py` (free:1, solo:3, pro:10, portfolio:∞) [Prio: H] [Effort: XS]
+### Backend
+- [ ] `services/stripe.py` + `routers/stripe.py` — Checkout + Webhook [Prio: H] [Effort: M]
+- [ ] `check_unit_limit` Dependency aktiv schalten [Prio: H] [Effort: S]
 
 ### Frontend
-- [ ] Stripe Produkte + Preise anlegen (4 Tiers + 4 Add-Ons) im Stripe Dashboard [Prio: H] [Effort: S]
-- [ ] Frontend: Pricing-Seite / Upgrade-Modal [Prio: H] [Effort: M]
-- [ ] Frontend: Upgrade-Prompts (wenn Einheiten-Limit erreicht) [Prio: H] [Effort: S]
-- [ ] Frontend: Billing-Seite `settings/billing/page.tsx` [Prio: M] [Effort: M]
-- [ ] Frontend: Freemium-Flow (1 Einheit kostenlos, dann Paywall) [Prio: H] [Effort: M]
+- [ ] Pricing-Seite / Upgrade-Modal [Prio: H] [Effort: M]
+- [ ] Upgrade-Prompt wenn Einheiten-Limit erreicht [Prio: H] [Effort: S]
+- [ ] Billing-Seite `settings/billing/page.tsx` [Prio: M] [Effort: M]
 
 ---
 
-## 📌 Sprint 5 — Compliance & Polish (Wo 10–11)
-*Ziel: DSGVO-konform, performant, launch-ready*
+## 📌 Sprint 5 — Compliance & Polish
+*Ziel: DSGVO-konform, launch-ready*
 
 ### DSGVO
-- [ ] Frontend: Datenschutzerklärung (statische Seite) [Prio: H] [Effort: M]
-- [ ] Frontend: AGB (statische Seite) [Prio: H] [Effort: M]
-- [ ] Frontend: Cookie-Banner [Prio: M] [Effort: S]
-- [ ] Backend: AVV-Template (PDF-Response bei Registration) [Prio: H] [Effort: S]
-- [ ] Backend: GET `/account/export` — ZIP aller User-Daten (Art. 20 DSGVO) [Prio: H] [Effort: M]
-- [ ] Backend: DELETE `/account` — Account-Löschung mit Kaskade [Prio: H] [Effort: M]
+- [ ] Datenschutzerklärung + AGB (statische Seiten) [Prio: H] [Effort: M]
+- [ ] Cookie-Banner [Prio: M] [Effort: S]
+- [ ] GET `/account/export` — ZIP aller User-Daten (Art. 20) [Prio: H] [Effort: M]
+- [ ] DELETE `/account` — Account-Löschung mit Kaskade [Prio: H] [Effort: M]
 
 ### Performance & QA
-- [ ] Frontend: Lighthouse Score > 90 (Core Web Vitals) [Prio: M] [Effort: M]
-- [ ] Frontend: Mobile Responsive Check (alle Screens) [Prio: H] [Effort: M]
-- [ ] Frontend + Backend: Error Monitoring (Sentry) [Prio: M] [Effort: S]
-- [ ] Frontend: PostHog Analytics Setup [Prio: M] [Effort: S]
-- [ ] Backend: pytest Tests für kritischen Pfad (OCR-Mock → Extraktion → Validierung) [Prio: M] [Effort: L]
-- [ ] E2E Test (Playwright): Upload → Extraktion → Dashboard erscheint [Prio: M] [Effort: L]
+- [ ] Mobile Responsive Check [Prio: H] [Effort: M]
+- [ ] Error Monitoring (Sentry) [Prio: M] [Effort: S]
+- [ ] PostHog Analytics [Prio: M] [Effort: S]
+- [ ] pytest kritischer Pfad (OCR-Mock → Extraktion) [Prio: M] [Effort: L]
 
 ---
 
-## 📌 Sprint 6 — Launch (Wo 12)
+## 📌 Sprint 6 — Launch
 - [ ] Domain konfigurieren [Prio: H] [Effort: XS]
-- [ ] Frontend: Vercel Production Deployment [Prio: H] [Effort: S]
-- [ ] Backend: Railway/Fly.io Production Deployment (Docker) [Prio: H] [Effort: M]
-- [ ] Backend: Resend Integration — Transaktions-Mails (Willkommen, Magic Link Custom Template) [Prio: H] [Effort: M]
-- [ ] Frontend: Waitlist / Beta-Anmeldungs-Seite (Landing Page) [Prio: H] [Effort: L]
+- [ ] Vercel + Railway/Fly.io Production Deployment [Prio: H] [Effort: M]
+- [ ] Resend Transaktions-Mails [Prio: H] [Effort: M]
+- [ ] Landing Page / Waitlist [Prio: H] [Effort: L]
 - [ ] Beta-User onboarden (5–10 reale Vermieter) [Prio: H] [Effort: M]
 
 ---
 
-## 🧊 Backlog (Phase 2+)
+## 🧊 Backlog Phase 2 — Nach Launch
 
+### Rechts-Check *(bewusst verschoben)*
+- [ ] BGH-Urteils-Datenbank (Top 50 Klauseln als Pydantic-Models)
+- [ ] Klausel-Analyse-Prompt + Risiko-Scoring
+- [ ] `routers/legal_check.py` — POST `/legal-check`
+- [ ] Frontend: Rechts-Check Panel (Tab 5 in Einheiten-Detail — Placeholder bereits vorhanden)
+
+### Steuer-Export *(verschoben)*
+- [ ] GET `/export/tax` — Steuer-Export Anlage V (openpyxl)
+
+### Mietspiegel *(bewusst verschoben)*
+- [ ] Mietspiegel-Daten Top-10-Städte in DB laden
+- [ ] Vergleichs-Logik in `utils/rent_calculator.py`
+- [ ] Frontend: Mietspiegel-Vergleich in Einheiten-Detail
+
+### Weitere Phase-2-Features
 - [ ] PSD2/FinAPI Bank-Anbindung
 - [ ] OAuth E-Mail-Integration (Gmail/Outlook)
 - [ ] Mahnwesen-Automatisierung
@@ -175,7 +151,6 @@
 - [ ] Mobile App (React Native)
 - [ ] Voice-Agenten
 - [ ] Handwerker-Marketplace
-- [ ] Versicherungs-Provisions-Modell
 
 ---
 
@@ -183,4 +158,9 @@
 
 - [x] 2026-06-05 — Projekt-Kontext erstellt (claude.md, README, docs/, tasks.md)
 - [x] 2026-06-05 — Architektur auf FastAPI (Python) Backend umgestellt
-- [x] 2026-06-05 — Sprint 1 abgeschlossen: Frontend (Next.js 16) + Backend (FastAPI) + Supabase (12 Tabellen, Auth, Storage) laufen lokal
+- [x] 2026-06-05 — Sprint 1 abgeschlossen
+- [x] 2026-06-07 — App-Name: Heimio. Design System erstellt + implementiert (DM Sans, Warm Green, Apple-Style)
+- [x] 2026-06-10 — Sprint 2 abgeschlossen: AI-Pipeline live (Upload → OCR → Extraktion → Review → DB)
+- [x] 2026-06-12 — AI-Pipeline optimiert: gemini-2.5-flash, 3× schneller, 21/21 Felder
+- [x] 2026-06-12 — Rechts-Check + Mietspiegel auf Phase 2 verschoben
+- [x] 2026-06-12 — Sprint 3 abgeschlossen: Dashboard, Einheiten-Listen, Kalender, Dokumente, Tracker
